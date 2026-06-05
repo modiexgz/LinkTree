@@ -232,7 +232,7 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-userSchema.pre('validate', function setTenantDefaults(next) {
+userSchema.pre('validate', function setTenantDefaults() {
   if (!this.tenant) {
     this.tenant = {};
   }
@@ -242,16 +242,14 @@ userSchema.pre('validate', function setTenantDefaults(next) {
   if (!this.tenant.displayName && this.name) {
     this.tenant.displayName = this.name;
   }
-  next();
 });
 
-userSchema.pre('save', async function hashPassword(next) {
+userSchema.pre('save', async function hashPassword() {
   if (!this.isModified('password')) {
-    return next();
+    return;
   }
 
   this.password = await bcrypt.hash(this.password, 12);
-  return next();
 });
 
 userSchema.methods.comparePassword = function comparePassword(candidate) {
