@@ -1,0 +1,13 @@
+<div class="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-full border border-white/40 bg-white/75 p-2 shadow-premium backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/75 <%= isRtl ? 'right-auto left-5' : '' %>">
+  <label class="sr-only" for="global-locale"><%= t('language') %></label>
+  <select id="global-locale" data-language-select class="rounded-full border border-slate-200 bg-white/90 px-3 py-2 text-sm font-semibold text-slate-900 outline-none transition-premium hover:scale-[1.02] dark:border-white/10 dark:bg-zinc-900 dark:text-white">
+    <% locales.forEach((item) => { %>
+      <option value="<%= item.code %>" <%= item.code === locale ? 'selected' : '' %>><%= item.label %></option>
+    <% }) %>
+  </select>
+  <div class="flex rounded-full border border-slate-200 bg-slate-100 p-1 dark:border-white/10 dark:bg-zinc-900" aria-label="<%= t('theme') %>">
+    <button type="button" data-theme-choice="light" class="theme-pill rounded-full px-3 py-1.5 text-xs font-bold transition-premium hover:scale-105 active:scale-95"><%= t('light') %></button>
+    <button type="button" data-theme-choice="dark" class="theme-pill rounded-full px-3 py-1.5 text-xs font-bold transition-premium hover:scale-105 active:scale-95"><%= t('dark') %></button>
+    <button type="button" data-theme-choice="system" class="theme-pill rounded-full px-3 py-1.5 text-xs font-bold transition-premium hover:scale-105 active:scale-95"><%= t('system') %></button>
+  </div>
+</div>

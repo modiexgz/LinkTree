@@ -1,0 +1,201 @@
+:root {
+  color-scheme: light;
+  --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.55) transparent;
+}
+
+body {
+  transition: background-color 0.5s var(--ease-premium), color 0.5s var(--ease-premium);
+}
+
+.transition-premium {
+  transition: all 0.5s var(--ease-premium);
+}
+
+.glass-card {
+  border: 1px solid rgba(255, 255, 255, 0.52);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.58));
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.14);
+  backdrop-filter: blur(24px);
+}
+
+.dark .glass-card {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, rgba(24, 24, 27, 0.88), rgba(9, 9, 11, 0.72));
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.44);
+}
+
+.premium-button {
+  transform: translateZ(0);
+  transition: all 0.5s var(--ease-premium);
+}
+
+.premium-button:hover {
+  transform: scale(1.02) translateY(-1px);
+}
+
+.premium-button:active {
+  transform: scale(0.98) translateY(1px);
+}
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: rgba(148, 163, 184, 0.16);
+}
+
+.skeleton::after {
+  animation: shimmer 1.8s linear infinite;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.54), transparent);
+  content: "";
+  inset: 0;
+  position: absolute;
+  transform: translateX(-100%);
+}
+
+.dark .skeleton {
+  background: rgba(39, 39, 42, 0.7);
+}
+
+.dark .skeleton::after {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+}
+
+.theme-pill.is-active {
+  background: #020617;
+  color: #fff;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.24);
+}
+
+.dark .theme-pill.is-active {
+  background: #fff;
+  color: #020617;
+}
+
+.profile-background {
+  background-position: center;
+  background-size: cover;
+}
+
+.bio-button-fill {
+  background: var(--accent, #111827);
+  color: white;
+}
+
+.bio-button-outline {
+  border: 1px solid color-mix(in srgb, var(--accent, #111827) 45%, transparent);
+  background: rgba(255, 255, 255, 0.54);
+  color: var(--accent, #111827);
+}
+
+.bio-button-hard-shadow {
+  border: 2px solid var(--accent, #111827);
+  background: #fff;
+  box-shadow: 7px 7px 0 var(--accent, #111827);
+  color: var(--accent, #111827);
+}
+
+.bio-button-soft-shadow {
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.18);
+  color: #111827;
+}
+
+.bio-button-rounded {
+  background: rgba(255, 255, 255, 0.82);
+  border-radius: 999px;
+  color: #111827;
+}
+
+.bio-button-square {
+  background: rgba(255, 255, 255, 0.84);
+  border-radius: 0.85rem;
+  color: #111827;
+}
+
+.dark .bio-button-outline,
+.dark .bio-button-soft-shadow,
+.dark .bio-button-rounded,
+.dark .bio-button-square {
+  background: rgba(9, 9, 11, 0.7);
+  color: #fff;
+}
+
+.dark .bio-button-hard-shadow {
+  background: #09090b;
+  color: #fff;
+}
+
+.link-leap {
+  animation: leap 2.8s var(--ease-premium) infinite;
+}
+
+.link-pulse {
+  animation: pulse 2.4s var(--ease-premium) infinite;
+}
+
+.link-float {
+  animation: float 4.4s var(--ease-premium) infinite;
+}
+
+.modal {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(18px) scale(0.98);
+  transition: all 0.5s var(--ease-premium);
+}
+
+.modal.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes leap {
+  0%,
+  78%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  86% {
+    transform: translateY(-8px) scale(1.015);
+  }
+  93% {
+    transform: translateY(2px) scale(0.995);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

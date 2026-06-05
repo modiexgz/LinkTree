@@ -1,0 +1,301 @@
+<%- include('partials/head', { title, locale, isRtl, t, locales, flash }) %>
+<% const fmtDate = (value) => value ? new Date(value).toISOString().slice(0, 16) : ''; %>
+<% const socials = user.socialLinks.length ? user.socialLinks : [{ platform: 'instagram', label: 'Instagram', url: '', icon: 'instagram' }, { platform: 'youtube', label: 'YouTube', url: '', icon: 'youtube' }, { platform: 'github', label: 'GitHub', url: '', icon: 'github' }]; %>
+<% const products = user.products.length ? user.products : [{ title: '', description: '', price: 0, currency: 'USD' }]; %>
+<main class="mx-auto min-h-screen w-full max-w-7xl px-5 py-6 sm:px-8">
+  <nav class="sticky top-4 z-40 mb-8 flex flex-wrap items-center justify-between gap-4 rounded-[1.75rem] border border-white/60 bg-white/75 px-5 py-4 shadow-premium backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/75">
+    <a href="/admin" class="flex items-center gap-3 text-lg font-black">
+      <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-black text-white dark:bg-white dark:text-black"><i data-lucide="sparkles" class="h-5 w-5"></i></span>
+      <%= t('brand') %>
+    </a>
+    <div class="flex flex-wrap items-center gap-2 text-sm font-bold">
+      <a href="#analytics" class="rounded-full px-4 py-2 text-slate-600 transition-premium hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10"><%= t('analytics') %></a>
+      <a href="#links" class="rounded-full px-4 py-2 text-slate-600 transition-premium hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10"><%= t('links') %></a>
+      <a href="#design" class="rounded-full px-4 py-2 text-slate-600 transition-premium hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10"><%= t('design') %></a>
+      <a href="/<%= user.username %>" target="_blank" class="premium-button rounded-full bg-slate-950 px-4 py-2 text-white dark:bg-white dark:text-black"><%= t('profile') %></a>
+      <form action="/auth/logout" method="post">
+        <button class="rounded-full px-4 py-2 text-slate-500 transition-premium hover:bg-rose-50 hover:text-rose-600 dark:text-slate-300 dark:hover:bg-rose-950/40"><%= t('logout') %></button>
+      </form>
+    </div>
+  </nav>
+
+  <%- include('partials/flash', { flash }) %>
+
+  <header class="grid gap-6 lg:grid-cols-[1fr_380px]">
+    <section class="glass-card rounded-[2.25rem] p-8">
+      <div class="flex flex-wrap items-start justify-between gap-5">
+        <div>
+          <p class="mb-3 inline-flex rounded-full bg-blue-500/10 px-3 py-1 text-xs font-black uppercase tracking-[0.22em] text-blue-600 dark:text-blue-300"><%= user.tenant.plan %> tenant</p>
+          <h1 class="text-4xl font-black tracking-tight sm:text-6xl"><%= t('dashboard') %></h1>
+          <p class="mt-4 max-w-2xl text-slate-600 dark:text-slate-300">Manage <strong><%= user.tenant.displayName || user.name %></strong>, shape the public experience, and watch visitor behavior become actionable.</p>
+        </div>
+        <button data-copy="/<%= user.username %>" class="premium-button inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-black dark:border-white/10 dark:bg-white/10">
+          <i data-lucide="copy" class="h-4 w-4"></i>
+          Copy profile
+        </button>
+      </div>
+      <div id="analytics" class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="rounded-3xl bg-white/70 p-5 dark:bg-white/5">
+          <p class="text-sm font-bold text-slate-500 dark:text-slate-400"><%= t('totalViews') %></p>
+          <p class="mt-2 text-4xl font-black"><%= analytics.profileViews %></p>
+        </div>
+        <div class="rounded-3xl bg-white/70 p-5 dark:bg-white/5">
+          <p class="text-sm font-bold text-slate-500 dark:text-slate-400"><%= t('uniqueVisitors') %></p>
+          <p class="mt-2 text-4xl font-black"><%= analytics.uniqueVisitors %></p>
+        </div>
+        <div class="rounded-3xl bg-white/70 p-5 dark:bg-white/5">
+          <p class="text-sm font-bold text-slate-500 dark:text-slate-400">Clicks</p>
+          <p class="mt-2 text-4xl font-black"><%= analytics.linkClicks %></p>
+        </div>
+        <div class="rounded-3xl bg-white/70 p-5 dark:bg-white/5">
+          <p class="text-sm font-bold text-slate-500 dark:text-slate-400"><%= t('ctr') %></p>
+          <p class="mt-2 text-4xl font-black"><%= analytics.ctr %>%</p>
+        </div>
+      </div>
+      <div class="mt-6 rounded-[2rem] border border-slate-200 bg-white/60 p-4 dark:border-white/10 dark:bg-black/20">
+        <canvas data-analytics-chart data-series='<%- JSON.stringify(analytics.series) %>' class="h-56 w-full"></canvas>
+      </div>
+    </section>
+
+    <aside class="glass-card rounded-[2.25rem] p-6">
+      <p class="mb-4 text-sm font-black uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400"><%= t('livePreview') %></p>
+      <div data-tilt class="overflow-hidden rounded-[2rem] border border-slate-200 bg-slate-950 p-4 text-white shadow-obsidian dark:border-white/10">
+        <div class="rounded-[1.5rem] bg-gradient-to-br from-zinc-900 to-black p-5">
+          <div class="mx-auto h-20 w-20 overflow-hidden rounded-full bg-white/10">
+            <% if (user.avatarUrl) { %>
+              <img src="<%= user.avatarUrl %>" alt="" class="h-full w-full object-cover">
+            <% } %>
+          </div>
+          <h2 class="mt-4 text-center text-xl font-black"><%= user.name %></h2>
+          <p class="mt-1 text-center text-sm text-white/55"><%= user.bio %></p>
+          <div class="mt-5 space-y-2">
+            <% links.slice(0, 3).forEach((link) => { %>
+              <div class="flex items-center gap-3 rounded-2xl bg-white/10 p-3 text-sm font-bold">
+                <i data-lucide="<%= link.icon || 'link' %>" class="h-4 w-4"></i>
+                <%= link.title %>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </header>
+
+  <section class="mt-8 grid gap-6 lg:grid-cols-3">
+    <div class="glass-card rounded-[2rem] p-6">
+      <h2 class="text-xl font-black"><%= t('topLinks') %></h2>
+      <div class="mt-5 space-y-3">
+        <% if (analytics.topLinks.length === 0) { %>
+          <div class="skeleton h-16 rounded-2xl"></div>
+        <% } %>
+        <% analytics.topLinks.forEach((item) => { %>
+          <div class="flex items-center justify-between rounded-2xl bg-white/60 p-4 dark:bg-white/5">
+            <span class="flex items-center gap-3 font-bold"><i data-lucide="<%= item.icon || 'link' %>" class="h-4 w-4"></i><%= item.title %></span>
+            <span class="rounded-full bg-slate-950 px-3 py-1 text-xs font-black text-white dark:bg-white dark:text-black"><%= item.clicks %></span>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+    <div class="glass-card rounded-[2rem] p-6">
+      <h2 class="text-xl font-black"><%= t('referrers') %></h2>
+      <div class="mt-5 space-y-3">
+        <% (analytics.referrers.length ? analytics.referrers : [{ _id: 'Direct', count: 0 }]).forEach((item) => { %>
+          <div class="flex items-center justify-between rounded-2xl bg-white/60 p-4 dark:bg-white/5">
+            <span class="font-bold"><%= item._id || 'Direct' %></span>
+            <span class="text-sm font-black text-slate-500 dark:text-slate-300"><%= item.count %></span>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+    <div class="glass-card rounded-[2rem] p-6">
+      <h2 class="text-xl font-black"><%= t('countries') %></h2>
+      <div class="mt-5 space-y-3">
+        <% (analytics.countries.length ? analytics.countries : [{ _id: 'Unknown', count: 0 }]).forEach((item) => { %>
+          <div class="flex items-center justify-between rounded-2xl bg-white/60 p-4 dark:bg-white/5">
+            <span class="font-bold"><%= item._id || 'Unknown' %></span>
+            <span class="text-sm font-black text-slate-500 dark:text-slate-300"><%= item.count %></span>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+
+  <section id="links" class="mt-8 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+    <form action="/admin/links" method="post" class="glass-card rounded-[2rem] p-6">
+      <h2 class="text-2xl font-black">Create advanced link</h2>
+      <div class="mt-5 grid gap-4">
+        <input name="title" placeholder="Title" required class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+        <input name="url" placeholder="https://example.com" required class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+        <textarea name="description" placeholder="Short description" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950"></textarea>
+        <div class="grid gap-3 sm:grid-cols-2">
+          <select name="type" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+            <% ['standard', 'animated', 'scheduled', 'gated', 'support', 'product'].forEach((type) => { %>
+              <option value="<%= type %>"><%= type %></option>
+            <% }) %>
+          </select>
+          <input name="icon" value="link" placeholder="Lucide icon" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+          <select name="animation" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+            <% ['none', 'leap', 'pulse', 'float'].forEach((animation) => { %>
+              <option value="<%= animation %>"><%= animation %></option>
+            <% }) %>
+          </select>
+          <input name="order" type="number" value="0" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+        </div>
+        <div class="grid gap-3 sm:grid-cols-2">
+          <input name="startsAt" type="datetime-local" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+          <input name="endsAt" type="datetime-local" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+        </div>
+        <div class="grid gap-3 sm:grid-cols-2">
+          <select name="gateType" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+            <% ['none', 'password', 'age', 'newsletter'].forEach((gate) => { %>
+              <option value="<%= gate %>"><%= gate %></option>
+            <% }) %>
+          </select>
+          <input name="gatePassword" placeholder="Gate password" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+          <input name="newsletterLabel" placeholder="Newsletter gate label" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+          <input name="ageMinimum" type="number" value="18" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+        </div>
+        <div class="grid gap-3 sm:grid-cols-3">
+          <input name="productLabel" placeholder="Product label" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+          <input name="price" type="number" step="0.01" placeholder="Price" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+          <input name="currency" value="USD" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+        </div>
+        <label class="flex items-center gap-3 rounded-2xl bg-white/60 p-4 font-bold dark:bg-white/5"><input name="pinned" type="checkbox"> Pin link</label>
+        <button class="premium-button rounded-2xl bg-slate-950 px-5 py-4 font-black text-white shadow-premium dark:bg-white dark:text-black">Add link</button>
+      </div>
+    </form>
+
+    <div class="space-y-4">
+      <% links.forEach((link) => { %>
+        <details class="glass-card rounded-[2rem] p-5" <%= links.indexOf(link) === 0 ? 'open' : '' %>>
+          <summary class="flex cursor-pointer list-none items-center justify-between gap-4">
+            <span class="flex items-center gap-3 text-lg font-black"><i data-lucide="<%= link.icon || 'link' %>" class="h-5 w-5"></i><%= link.title %></span>
+            <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-black uppercase text-slate-500 dark:bg-white/10 dark:text-slate-300"><%= link.type %></span>
+          </summary>
+          <form action="/admin/links/<%= link._id %>" method="post" class="mt-5 grid gap-3">
+            <input name="title" value="<%= link.title %>" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+            <input name="url" value="<%= link.url %>" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+            <textarea name="description" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950"><%= link.description %></textarea>
+            <div class="grid gap-3 sm:grid-cols-3">
+              <select name="type" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+                <% ['standard', 'animated', 'scheduled', 'gated', 'support', 'product'].forEach((type) => { %>
+                  <option value="<%= type %>" <%= link.type === type ? 'selected' : '' %>><%= type %></option>
+                <% }) %>
+              </select>
+              <input name="icon" value="<%= link.icon %>" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+              <select name="animation" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+                <% ['none', 'leap', 'pulse', 'float'].forEach((animation) => { %>
+                  <option value="<%= animation %>" <%= link.animation === animation ? 'selected' : '' %>><%= animation %></option>
+                <% }) %>
+              </select>
+              <input name="startsAt" type="datetime-local" value="<%= fmtDate(link.schedule && link.schedule.startsAt) %>" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+              <input name="endsAt" type="datetime-local" value="<%= fmtDate(link.schedule && link.schedule.endsAt) %>" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+              <input name="order" type="number" value="<%= link.order %>" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+            </div>
+            <div class="grid gap-3 sm:grid-cols-4">
+              <select name="gateType" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+                <% ['none', 'password', 'age', 'newsletter'].forEach((gate) => { %>
+                  <option value="<%= gate %>" <%= link.gate.type === gate ? 'selected' : '' %>><%= gate %></option>
+                <% }) %>
+              </select>
+              <input name="gatePassword" value="<%= link.gate.password %>" placeholder="Password" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+              <input name="price" type="number" step="0.01" value="<%= link.commerce.price %>" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+              <input name="currency" value="<%= link.commerce.currency %>" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+            </div>
+            <div class="flex flex-wrap items-center gap-4">
+              <label class="flex items-center gap-2 font-bold"><input name="pinned" type="checkbox" <%= link.pinned ? 'checked' : '' %>> Pinned</label>
+              <label class="flex items-center gap-2 font-bold"><input name="active" type="checkbox" <%= link.active ? 'checked' : '' %>> Active</label>
+              <button class="premium-button rounded-full bg-slate-950 px-5 py-3 text-sm font-black text-white dark:bg-white dark:text-black">Save</button>
+            </div>
+          </form>
+          <form action="/admin/links/<%= link._id %>/delete" method="post" class="mt-3">
+            <button class="text-sm font-black text-rose-600">Delete link</button>
+          </form>
+        </details>
+      <% }) %>
+    </div>
+  </section>
+
+  <section id="design" class="mt-8">
+    <form action="/admin/profile" method="post" enctype="multipart/form-data" class="glass-card rounded-[2.25rem] p-6">
+      <div class="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h2 class="text-3xl font-black"><%= t('design') %> engine</h2>
+          <p class="mt-2 text-slate-600 dark:text-slate-300">Tune background media, buttons, typography, social icons, tips, products, and localization.</p>
+        </div>
+        <button class="premium-button rounded-full bg-slate-950 px-6 py-3 font-black text-white shadow-premium dark:bg-white dark:text-black">Save design</button>
+      </div>
+      <div class="mt-6 grid gap-4 lg:grid-cols-3">
+        <input name="name" value="<%= user.name %>" placeholder="Name" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+        <input name="displayName" value="<%= user.tenant.displayName %>" placeholder="Tenant display name" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+        <input name="avatarUrl" value="<%= user.avatarUrl %>" placeholder="Avatar URL" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+        <textarea name="bio" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950 lg:col-span-3"><%= user.bio %></textarea>
+        <select name="locale" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+          <% locales.forEach((item) => { %>
+            <option value="<%= item.code %>" <%= user.locale === item.code ? 'selected' : '' %>><%= item.label %></option>
+          <% }) %>
+        </select>
+        <select name="colorMode" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+          <% ['system', 'light', 'dark'].forEach((mode) => { %>
+            <option value="<%= mode %>" <%= user.profileTheme.colorMode === mode ? 'selected' : '' %>><%= mode %></option>
+          <% }) %>
+        </select>
+        <select name="typography" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+          <% ['sans', 'serif', 'mono'].forEach((font) => { %>
+            <option value="<%= font %>" <%= user.profileTheme.typography === font ? 'selected' : '' %>><%= font %></option>
+          <% }) %>
+        </select>
+        <select name="backgroundType" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+          <% ['gradient', 'solid', 'image', 'video'].forEach((type) => { %>
+            <option value="<%= type %>" <%= user.profileTheme.backgroundType === type ? 'selected' : '' %>><%= type %></option>
+          <% }) %>
+        </select>
+        <input name="backgroundValue" value="<%= user.profileTheme.backgroundValue %>" placeholder="Gradient, color, image URL, or video URL" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950 lg:col-span-2">
+        <input name="backgroundFile" type="file" accept="image/*,video/mp4,video/webm" class="rounded-2xl border border-dashed border-slate-300 bg-white/70 px-4 py-3 dark:border-white/15 dark:bg-zinc-950">
+        <select name="buttonStyle" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+          <% ['fill', 'outline', 'hard-shadow', 'soft-shadow', 'rounded', 'square'].forEach((style) => { %>
+            <option value="<%= style %>" <%= user.profileTheme.buttonStyle === style ? 'selected' : '' %>><%= style %></option>
+          <% }) %>
+        </select>
+        <input name="accentColor" type="color" value="<%= user.profileTheme.accentColor %>" class="h-14 rounded-2xl border border-slate-200 bg-white/80 px-2 dark:border-white/10 dark:bg-zinc-950">
+      </div>
+      <div class="mt-8 grid gap-6 lg:grid-cols-3">
+        <div>
+          <h3 class="mb-3 text-lg font-black">Social icons</h3>
+          <div class="space-y-3">
+            <% socials.slice(0, 4).forEach((social) => { %>
+              <div class="grid gap-2 rounded-3xl bg-white/50 p-3 dark:bg-white/5">
+                <input name="socialPlatform" value="<%= social.platform %>" placeholder="Platform" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+                <input name="socialLabel" value="<%= social.label %>" placeholder="Label" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+                <input name="socialIcon" value="<%= social.icon %>" placeholder="Lucide icon" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+                <input name="socialUrl" value="<%= social.url %>" placeholder="URL" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+              </div>
+            <% }) %>
+          </div>
+        </div>
+        <div>
+          <h3 class="mb-3 text-lg font-black">Tip jar</h3>
+          <div class="space-y-3 rounded-3xl bg-white/50 p-4 dark:bg-white/5">
+            <label class="flex items-center gap-2 font-bold"><input name="tipJarEnabled" type="checkbox" <%= user.tipJar.enabled ? 'checked' : '' %>> Enabled</label>
+            <input name="tipJarHeadline" value="<%= user.tipJar.headline %>" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+            <input name="tipJarAmounts" value="<%= user.tipJar.suggestedAmounts.join(',') %>" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+            <input name="tipJarCurrency" value="<%= user.tipJar.currency %>" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+          </div>
+        </div>
+        <div>
+          <h3 class="mb-3 text-lg font-black">Product shelf</h3>
+          <% products.slice(0, 2).forEach((product) => { %>
+            <div class="mb-3 grid gap-2 rounded-3xl bg-white/50 p-3 dark:bg-white/5">
+              <input name="productTitle" value="<%= product.title %>" placeholder="Product title" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+              <textarea name="productDescription" placeholder="Description" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950"><%= product.description %></textarea>
+              <input name="productPrice" type="number" step="0.01" value="<%= product.price %>" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+              <input name="productCurrency" value="<%= product.currency %>" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </form>
+  </section>
+</main>
+<%- include('partials/controls', { locales, locale, isRtl, t }) %>
+<%- include('partials/footer-scripts') %>
