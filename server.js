@@ -4,7 +4,7 @@ const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
+const connectMongo = require('connect-mongo');
 const methodOverride = require('method-override');
 
 const authRoutes = require('./routes/auth');
@@ -13,6 +13,7 @@ const apiRoutes = require('./routes/api');
 const bioRoutes = require('./routes/bio');
 
 const app = express();
+const MongoStore = connectMongo.MongoStore || connectMongo.default || connectMongo;
 const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/premium_linktree';
 const SESSION_SECRET = process.env.SESSION_SECRET || 'dev-only-change-this-secret';
