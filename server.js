@@ -17,6 +17,8 @@ const MongoStore = connectMongo.MongoStore || connectMongo.default || connectMon
 const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/premium_linktree';
 const SESSION_SECRET = process.env.SESSION_SECRET || 'dev-only-change-this-secret';
+let routesConfigured = false;
+let memoryMongoServer = null;
 
 const dictionaries = {
   en: {
@@ -191,79 +193,135 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(
-  session({
-    name: 'lumin.sid',
-    secret: SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 1000 * 60 * 60 * 24 * 14
-    },
-    store: MongoStore.create({
-      mongoUrl: MONGODB_URI,
-      ttl: 60 * 60 * 24 * 14
+
+function configureRoutes(mongoUri) {
+  if (routesConfigured) {
+    return;
+  }
+
+  app.use(
+    session({
+      name: 'lumin.sid',
+      secret: SESSION_SECRET,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 1000 * 60 * 60 * 24 * 14
+      },
+      store: MongoStore.create({
+        mongoUrl: mongoUri,
+        ttl: 60 * 60 * 24 * 14
+      })
     })
-  })
-);
+  );
 
-app.use((req, res, next) => {
-  const requestedLocale = req.query.lang || req.session.locale || 'en';
-  const locale = dictionaries[requestedLocale] ? requestedLocale : 'en';
-  req.locale = locale;
-  req.isRtl = locale === 'ar';
-  res.locals.locale = locale;
-  res.locals.isRtl = req.isRtl;
-  res.locals.locales = [
-    { code: 'en', label: 'English' },
-    { code: 'ar', label: 'العربية' },
-    { code: 'sw', label: 'Swahili' },
-    { code: 'fr', label: 'Francais' },
-    { code: 'am', label: 'አማርኛ' },
-    { code: 'ti', label: 'ትግርኛ' }
-  ];
-  res.locals.dictionary = dictionaries[locale];
-  res.locals.t = (key) => dictionaries[locale][key] || dictionaries.en[key] || key;
-  res.locals.currentUser = req.session.user || null;
-  res.locals.flash = req.session.flash || null;
-  res.locals.currentPath = req.originalUrl;
-  delete req.session.flash;
-  next();
-});
-
-app.use('/auth', authRoutes);
-app.use('/admin', adminRoutes);
-app.use('/api', apiRoutes);
-app.use('/', bioRoutes);
-
-app.use((req, res) => {
-  res.status(404).render('error', {
-    title: 'Page not found',
-    message: 'The page you are looking for has drifted out of orbit.'
+  app.use((req, res, next) => {
+    const requestedLocale = req.query.lang || req.session.locale || 'en';
+    const locale = dictionaries[requestedLocale] ? requestedLocale : 'en';
+    req.locale = locale;
+    req.isRtl = locale === 'ar';
+    res.locals.locale = locale;
+    res.locals.isRtl = req.isRtl;
+    res.locals.locales = [
+      { code: 'en', label: 'English' },
+      { code: 'ar', label: 'العربية' },
+      { code: 'sw', label: 'Swahili' },
+      { code: 'fr', label: 'Francais' },
+      { code: 'am', label: 'አማርኛ' },
+      { code: 'ti', label: 'ትግርኛ' }
+    ];
+    res.locals.dictionary = dictionaries[locale];
+    res.locals.t = (key) => dictionaries[locale][key] || dictionaries.en[key] || key;
+    res.locals.currentUser = req.session.user || null;
+    res.locals.flash = req.session.flash || null;
+    res.locals.currentPath = req.originalUrl;
+    delete req.session.flash;
+    next();
   });
-});
 
-app.use((error, req, res, next) => {
-  console.error(error);
-  const status = error.status || 500;
-  res.status(status).render('error', {
-    title: status === 500 ? 'Something went wrong' : 'Request error',
-    message: status === 500 ? 'We hit an unexpected issue. Please try again.' : error.message
+  app.use('/auth', authRoutes);
+  app.use('/admin', adminRoutes);
+  app.use('/api', apiRoutes);
+  app.use('/', bioRoutes);
+
+  app.use((req, res) => {
+    res.status(404).render('error', {
+      title: 'Page not found',
+      message: 'The page you are looking for has drifted out of orbit.'
+    });
   });
-});
+
+  app.use((error, req, res, next) => {
+    console.error(error);
+    const status = error.status || 500;
+    res.status(status).render('error', {
+      title: status === 500 ? 'Something went wrong' : 'Request error',
+      message: status === 500 ? 'We hit an unexpected issue. Please try again.' : error.message
+    });
+  });
+
+  routesConfigured = true;
+}
+
+async function connectMongoDatabase(uri) {
+  const serverSelectionTimeoutMS = Number(
+    process.env.MONGO_SERVER_SELECTION_TIMEOUT_MS || (process.env.NODE_ENV === 'production' ? 30000 : 3000)
+  );
+  await mongoose.connect(uri, { serverSelectionTimeoutMS });
+}
+
+async function resolveMongoUri() {
+  try {
+    await connectMongoDatabase(MONGODB_URI);
+    return MONGODB_URI;
+  } catch (error) {
+    const canUseMemoryMongo =
+      process.env.NODE_ENV !== 'production' && process.env.DISABLE_MEMORY_MONGO !== 'true';
+
+    if (!canUseMemoryMongo) {
+      throw error;
+    }
+
+    console.warn(`MongoDB unavailable at ${MONGODB_URI}. Starting embedded development MongoDB instead.`);
+    await mongoose.disconnect().catch(() => {});
+    const { MongoMemoryServer } = require('mongodb-memory-server');
+    memoryMongoServer = await MongoMemoryServer.create();
+    const memoryUri = memoryMongoServer.getUri('premium_linktree');
+    await connectMongoDatabase(memoryUri);
+    console.log(`Embedded MongoDB running at ${memoryUri}`);
+    return memoryUri;
+  }
+}
+
+async function shutdown() {
+  await mongoose.disconnect().catch(() => {});
+  if (memoryMongoServer) {
+    await memoryMongoServer.stop();
+  }
+}
 
 async function start() {
   mongoose.set('strictQuery', true);
-  await mongoose.connect(MONGODB_URI);
+  const mongoUri = await resolveMongoUri();
+  configureRoutes(mongoUri);
   app.listen(PORT, () => {
     console.log(`Lumin Bio running at http://localhost:${PORT}`);
   });
 }
 
 if (require.main === module) {
+  process.on('SIGINT', async () => {
+    await shutdown();
+    process.exit(0);
+  });
+  process.on('SIGTERM', async () => {
+    await shutdown();
+    process.exit(0);
+  });
+
   start().catch((error) => {
     console.error('Failed to start server:', error);
     process.exit(1);
