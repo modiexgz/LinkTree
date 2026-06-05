@@ -122,46 +122,116 @@
 
   <section id="links" class="mt-8 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
     <form action="/admin/links" method="post" class="glass-card rounded-[2rem] p-6">
-      <h2 class="text-2xl font-black">Create advanced link</h2>
+      <p class="mb-2 text-sm font-black uppercase tracking-[0.22em] text-blue-600 dark:text-blue-300">Add something to your bio</p>
+      <h2 class="text-2xl font-black">What do you want visitors to do?</h2>
+      <p class="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">Pick the purpose first. The extra settings below explain exactly what will appear on your public bio page.</p>
       <div class="mt-5 grid gap-4">
-        <input name="title" placeholder="Title" required class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
-        <input name="url" placeholder="https://example.com" required class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
-        <textarea name="description" placeholder="Short description" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950"></textarea>
-        <div class="grid gap-3 sm:grid-cols-2">
-          <select name="type" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
-            <% ['standard', 'animated', 'scheduled', 'gated', 'support', 'product'].forEach((type) => { %>
-              <option value="<%= type %>"><%= type %></option>
+        <label class="block">
+          <span class="mb-2 block text-sm font-black">Button title visitors see</span>
+          <input name="title" placeholder="Watch my newest video" required class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+        </label>
+        <label class="block">
+          <span class="mb-2 block text-sm font-black">Where the button sends them</span>
+          <input name="url" placeholder="https://example.com" required class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+        </label>
+        <label class="block">
+          <span class="mb-2 block text-sm font-black">Short note under the title</span>
+          <textarea name="description" placeholder="Optional: one sentence that explains this link." class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950"></textarea>
+        </label>
+
+        <div>
+          <span class="mb-3 block text-sm font-black">Choose the link type</span>
+          <div class="grid gap-3 sm:grid-cols-2">
+            <% [
+              { value: 'standard', icon: 'link', title: 'Simple link', body: 'A clean button that opens your URL.' },
+              { value: 'animated', icon: 'sparkles', title: 'Attention link', body: 'Adds gentle motion to highlight an important action.' },
+              { value: 'scheduled', icon: 'calendar-clock', title: 'Scheduled link', body: 'Shows only between the start and end dates below.' },
+              { value: 'gated', icon: 'lock', title: 'Locked link', body: 'Requires password, age confirmation, or newsletter signup.' },
+              { value: 'support', icon: 'heart', title: 'Support link', body: 'Use this for donations, tips, or support pages.' },
+              { value: 'product', icon: 'shopping-bag', title: 'Product link', body: 'Shows price and opens the checkout overlay simulation.' }
+            ].forEach((type, index) => { %>
+              <label class="cursor-pointer">
+                <input class="peer sr-only" type="radio" name="type" value="<%= type.value %>" <%= index === 0 ? 'checked' : '' %>>
+                <span class="block rounded-3xl border border-slate-200 bg-white/70 p-4 transition-premium peer-checked:border-slate-950 peer-checked:bg-slate-950 peer-checked:text-white dark:border-white/10 dark:bg-white/5 dark:peer-checked:border-white dark:peer-checked:bg-white dark:peer-checked:text-black">
+                  <span class="flex items-center gap-3 font-black"><i data-lucide="<%= type.icon %>" class="h-5 w-5"></i><%= type.title %></span>
+                  <span class="mt-2 block text-xs leading-5 opacity-70"><%= type.body %></span>
+                </span>
+              </label>
             <% }) %>
-          </select>
-          <input name="icon" value="link" placeholder="Lucide icon" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
-          <select name="animation" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
-            <% ['none', 'leap', 'pulse', 'float'].forEach((animation) => { %>
-              <option value="<%= animation %>"><%= animation %></option>
-            <% }) %>
-          </select>
-          <input name="order" type="number" value="0" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+          </div>
         </div>
-        <div class="grid gap-3 sm:grid-cols-2">
-          <input name="startsAt" type="datetime-local" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
-          <input name="endsAt" type="datetime-local" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+
+        <div class="rounded-3xl bg-white/55 p-4 dark:bg-white/5">
+          <h3 class="font-black">Display settings</h3>
+          <p class="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">These change how the button looks in your bio profile.</p>
+          <div class="mt-3 grid gap-3 sm:grid-cols-3">
+            <label class="block">
+              <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Icon</span>
+              <select name="icon" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+                <% [['link', 'Link'], ['play-circle', 'Video'], ['mail', 'Newsletter'], ['shopping-bag', 'Product'], ['calendar-check', 'Booking'], ['heart', 'Support'], ['music', 'Music'], ['globe', 'Website']].forEach((item) => { %>
+                  <option value="<%= item[0] %>"><%= item[1] %></option>
+                <% }) %>
+              </select>
+            </label>
+            <label class="block">
+              <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Motion</span>
+              <select name="animation" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+                <option value="none">None - calm</option>
+                <option value="leap">Leap - best for launches</option>
+                <option value="pulse">Pulse - subtle attention</option>
+                <option value="float">Float - soft movement</option>
+              </select>
+            </label>
+            <label class="block">
+              <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Position</span>
+              <input name="order" type="number" value="0" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+            </label>
+          </div>
+          <label class="mt-3 flex items-center gap-3 rounded-2xl bg-white/70 p-4 font-bold dark:bg-black/20"><input name="pinned" type="checkbox"> Pin this near the top of my bio</label>
         </div>
-        <div class="grid gap-3 sm:grid-cols-2">
-          <select name="gateType" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
-            <% ['none', 'password', 'age', 'newsletter'].forEach((gate) => { %>
-              <option value="<%= gate %>"><%= gate %></option>
-            <% }) %>
-          </select>
-          <input name="gatePassword" placeholder="Gate password" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
-          <input name="newsletterLabel" placeholder="Newsletter gate label" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
-          <input name="ageMinimum" type="number" value="18" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
-        </div>
-        <div class="grid gap-3 sm:grid-cols-3">
-          <input name="productLabel" placeholder="Product label" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
-          <input name="price" type="number" step="0.01" placeholder="Price" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
-          <input name="currency" value="USD" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
-        </div>
-        <label class="flex items-center gap-3 rounded-2xl bg-white/60 p-4 font-bold dark:bg-white/5"><input name="pinned" type="checkbox"> Pin link</label>
-        <button class="premium-button rounded-2xl bg-slate-950 px-5 py-4 font-black text-white shadow-premium dark:bg-white dark:text-black">Add link</button>
+
+        <details class="rounded-3xl bg-white/55 p-4 dark:bg-white/5">
+          <summary class="cursor-pointer list-none font-black">Optional: scheduling</summary>
+          <p class="mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">Use this for launches, tickets, limited drops, or seasonal links.</p>
+          <div class="mt-3 grid gap-3 sm:grid-cols-2">
+            <label class="block">
+              <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Show starting</span>
+              <input name="startsAt" type="datetime-local" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+            </label>
+            <label class="block">
+              <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Hide after</span>
+              <input name="endsAt" type="datetime-local" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+            </label>
+          </div>
+        </details>
+
+        <details class="rounded-3xl bg-white/55 p-4 dark:bg-white/5">
+          <summary class="cursor-pointer list-none font-black">Optional: unlock gate</summary>
+          <p class="mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">Visitors must complete this step before the destination opens.</p>
+          <div class="mt-3 grid gap-3 sm:grid-cols-2">
+            <select name="gateType" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+              <option value="none">No gate - open immediately</option>
+              <option value="password">Password required</option>
+              <option value="age">Age confirmation required</option>
+              <option value="newsletter">Email signup required</option>
+            </select>
+            <input name="gatePassword" placeholder="Password visitors enter" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+            <input name="newsletterLabel" placeholder="Message for newsletter unlock" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+            <input name="ageMinimum" type="number" value="18" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+          </div>
+        </details>
+
+        <details class="rounded-3xl bg-white/55 p-4 dark:bg-white/5">
+          <summary class="cursor-pointer list-none font-black">Optional: product checkout display</summary>
+          <p class="mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">If you choose Product link, these fields appear in the checkout overlay.</p>
+          <div class="mt-3 grid gap-3 sm:grid-cols-3">
+            <input name="productLabel" placeholder="Digital product, course, template..." class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+            <input name="price" type="number" step="0.01" placeholder="Price" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+            <input name="currency" value="USD" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+          </div>
+        </details>
+
+        <button class="premium-button rounded-2xl bg-slate-950 px-5 py-4 font-black text-white shadow-premium dark:bg-white dark:text-black">Add this to my bio</button>
       </div>
     </form>
 
@@ -220,79 +290,166 @@
     <form action="/admin/profile" method="post" enctype="multipart/form-data" class="glass-card rounded-[2.25rem] p-6">
       <div class="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h2 class="text-3xl font-black"><%= t('design') %> engine</h2>
-          <p class="mt-2 text-slate-600 dark:text-slate-300">Tune background media, buttons, typography, social icons, tips, products, and localization.</p>
+          <p class="mb-2 text-sm font-black uppercase tracking-[0.22em] text-fuchsia-600 dark:text-fuchsia-300">Customize your public page</p>
+          <h2 class="text-3xl font-black">Make the bio link feel like your brand</h2>
+          <p class="mt-2 max-w-2xl text-slate-600 dark:text-slate-300">Each setting below maps directly to something visitors see: your name, language, background, button shape, social icons, support box, and product shelf.</p>
         </div>
-        <button class="premium-button rounded-full bg-slate-950 px-6 py-3 font-black text-white shadow-premium dark:bg-white dark:text-black">Save design</button>
+        <button class="premium-button rounded-full bg-slate-950 px-6 py-3 font-black text-white shadow-premium dark:bg-white dark:text-black">Save my profile</button>
       </div>
-      <div class="mt-6 grid gap-4 lg:grid-cols-3">
-        <input name="name" value="<%= user.name %>" placeholder="Name" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
-        <input name="displayName" value="<%= user.tenant.displayName %>" placeholder="Tenant display name" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
-        <input name="avatarUrl" value="<%= user.avatarUrl %>" placeholder="Avatar URL" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
-        <textarea name="bio" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950 lg:col-span-3"><%= user.bio %></textarea>
-        <select name="locale" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
-          <% locales.forEach((item) => { %>
-            <option value="<%= item.code %>" <%= user.locale === item.code ? 'selected' : '' %>><%= item.label %></option>
-          <% }) %>
-        </select>
-        <select name="colorMode" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
-          <% ['system', 'light', 'dark'].forEach((mode) => { %>
-            <option value="<%= mode %>" <%= user.profileTheme.colorMode === mode ? 'selected' : '' %>><%= mode %></option>
-          <% }) %>
-        </select>
-        <select name="typography" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
-          <% ['sans', 'serif', 'mono'].forEach((font) => { %>
-            <option value="<%= font %>" <%= user.profileTheme.typography === font ? 'selected' : '' %>><%= font %></option>
-          <% }) %>
-        </select>
-        <select name="backgroundType" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
-          <% ['gradient', 'solid', 'image', 'video'].forEach((type) => { %>
-            <option value="<%= type %>" <%= user.profileTheme.backgroundType === type ? 'selected' : '' %>><%= type %></option>
-          <% }) %>
-        </select>
-        <input name="backgroundValue" value="<%= user.profileTheme.backgroundValue %>" placeholder="Gradient, color, image URL, or video URL" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950 lg:col-span-2">
-        <input name="backgroundFile" type="file" accept="image/*,video/mp4,video/webm" class="rounded-2xl border border-dashed border-slate-300 bg-white/70 px-4 py-3 dark:border-white/15 dark:bg-zinc-950">
-        <select name="buttonStyle" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
-          <% ['fill', 'outline', 'hard-shadow', 'soft-shadow', 'rounded', 'square'].forEach((style) => { %>
-            <option value="<%= style %>" <%= user.profileTheme.buttonStyle === style ? 'selected' : '' %>><%= style %></option>
-          <% }) %>
-        </select>
-        <input name="accentColor" type="color" value="<%= user.profileTheme.accentColor %>" class="h-14 rounded-2xl border border-slate-200 bg-white/80 px-2 dark:border-white/10 dark:bg-zinc-950">
-      </div>
-      <div class="mt-8 grid gap-6 lg:grid-cols-3">
-        <div>
-          <h3 class="mb-3 text-lg font-black">Social icons</h3>
-          <div class="space-y-3">
-            <% socials.slice(0, 4).forEach((social) => { %>
-              <div class="grid gap-2 rounded-3xl bg-white/50 p-3 dark:bg-white/5">
-                <input name="socialPlatform" value="<%= social.platform %>" placeholder="Platform" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
-                <input name="socialLabel" value="<%= social.label %>" placeholder="Label" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
-                <input name="socialIcon" value="<%= social.icon %>" placeholder="Lucide icon" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
-                <input name="socialUrl" value="<%= social.url %>" placeholder="URL" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+
+      <div class="mt-8 grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
+        <section class="rounded-[2rem] bg-white/55 p-5 dark:bg-white/5">
+          <h3 class="text-xl font-black">1. Profile identity</h3>
+          <p class="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">This is the top card on your public bio page.</p>
+          <div class="mt-4 grid gap-3">
+            <label class="block">
+              <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Display name</span>
+              <input name="name" value="<%= user.name %>" placeholder="Your public name" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+            </label>
+            <label class="block">
+              <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Workspace / brand name</span>
+              <input name="displayName" value="<%= user.tenant.displayName %>" placeholder="Brand or studio name" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+            </label>
+            <label class="block">
+              <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Avatar image URL</span>
+              <input name="avatarUrl" value="<%= user.avatarUrl %>" placeholder="https://..." class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+            </label>
+            <label class="block">
+              <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Bio sentence</span>
+              <textarea name="bio" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950"><%= user.bio %></textarea>
+            </label>
+            <label class="block">
+              <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Default language</span>
+              <select name="locale" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+                <% locales.forEach((item) => { %>
+                  <option value="<%= item.code %>" <%= user.locale === item.code ? 'selected' : '' %>><%= item.label %></option>
+                <% }) %>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section class="rounded-[2rem] bg-white/55 p-5 dark:bg-white/5">
+          <h3 class="text-xl font-black">2. Appearance</h3>
+          <p class="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">These controls change the overall mood and button style visitors see.</p>
+          <div class="mt-4 grid gap-4">
+            <div>
+              <span class="mb-3 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Page mode</span>
+              <div class="grid gap-3 sm:grid-cols-3">
+                <% [['system', 'Match device'], ['light', 'Always light'], ['dark', 'Always dark']].forEach((mode) => { %>
+                  <label class="cursor-pointer">
+                    <input class="peer sr-only" type="radio" name="colorMode" value="<%= mode[0] %>" <%= user.profileTheme.colorMode === mode[0] ? 'checked' : '' %>>
+                    <span class="block rounded-2xl border border-slate-200 bg-white/75 p-4 text-sm font-black transition-premium peer-checked:border-slate-950 peer-checked:bg-slate-950 peer-checked:text-white dark:border-white/10 dark:bg-black/20 dark:peer-checked:border-white dark:peer-checked:bg-white dark:peer-checked:text-black"><%= mode[1] %></span>
+                  </label>
+                <% }) %>
               </div>
+            </div>
+            <div class="grid gap-3 sm:grid-cols-2">
+              <label class="block">
+                <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Font personality</span>
+                <select name="typography" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+                  <option value="sans" <%= user.profileTheme.typography === 'sans' ? 'selected' : '' %>>Modern sans - clean creator look</option>
+                  <option value="serif" <%= user.profileTheme.typography === 'serif' ? 'selected' : '' %>>Editorial serif - premium magazine feel</option>
+                  <option value="mono" <%= user.profileTheme.typography === 'mono' ? 'selected' : '' %>>Mono - tech, code, gaming</option>
+                </select>
+              </label>
+              <label class="block">
+                <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Accent color</span>
+                <input name="accentColor" type="color" value="<%= user.profileTheme.accentColor %>" class="h-[3.25rem] w-full rounded-2xl border border-slate-200 bg-white/80 px-2 dark:border-white/10 dark:bg-zinc-950">
+              </label>
+            </div>
+            <div>
+              <span class="mb-3 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Button style</span>
+              <div class="grid gap-3 sm:grid-cols-3">
+                <% [
+                  ['soft-shadow', 'Soft card', 'Premium rounded buttons with depth.'],
+                  ['fill', 'Bold fill', 'High contrast buttons using your accent.'],
+                  ['outline', 'Outline', 'Minimal buttons with thin borders.'],
+                  ['hard-shadow', 'Hard shadow', 'Playful creator-style offset shadow.'],
+                  ['rounded', 'Pill', 'Very rounded social-style buttons.'],
+                  ['square', 'Square', 'Sharper modern cards.']
+                ].forEach((style) => { %>
+                  <label class="cursor-pointer">
+                    <input class="peer sr-only" type="radio" name="buttonStyle" value="<%= style[0] %>" <%= user.profileTheme.buttonStyle === style[0] ? 'checked' : '' %>>
+                    <span class="block h-full rounded-2xl border border-slate-200 bg-white/75 p-4 transition-premium peer-checked:border-slate-950 peer-checked:bg-slate-950 peer-checked:text-white dark:border-white/10 dark:bg-black/20 dark:peer-checked:border-white dark:peer-checked:bg-white dark:peer-checked:text-black">
+                      <span class="block text-sm font-black"><%= style[1] %></span>
+                      <span class="mt-1 block text-xs leading-5 opacity-65"><%= style[2] %></span>
+                    </span>
+                  </label>
+                <% }) %>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section class="mt-6 rounded-[2rem] bg-white/55 p-5 dark:bg-white/5">
+        <h3 class="text-xl font-black">3. Background</h3>
+        <p class="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">Use a gradient, solid color, image, or video behind your profile. Uploading a file overrides the text field.</p>
+        <div class="mt-4 grid gap-3 lg:grid-cols-[220px_1fr_260px]">
+          <label class="block">
+            <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Background type</span>
+            <select name="backgroundType" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+              <option value="gradient" <%= user.profileTheme.backgroundType === 'gradient' ? 'selected' : '' %>>Gradient</option>
+              <option value="solid" <%= user.profileTheme.backgroundType === 'solid' ? 'selected' : '' %>>Solid color</option>
+              <option value="image" <%= user.profileTheme.backgroundType === 'image' ? 'selected' : '' %>>Image URL/upload</option>
+              <option value="video" <%= user.profileTheme.backgroundType === 'video' ? 'selected' : '' %>>Video URL/upload</option>
+            </select>
+          </label>
+          <label class="block">
+            <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Background value</span>
+            <input name="backgroundValue" value="<%= user.profileTheme.backgroundValue %>" placeholder="CSS gradient, #111827, or media URL" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+          </label>
+          <label class="block">
+            <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Upload image/video</span>
+            <input name="backgroundFile" type="file" accept="image/*,video/mp4,video/webm" class="w-full rounded-2xl border border-dashed border-slate-300 bg-white/70 px-4 py-3 text-sm dark:border-white/15 dark:bg-zinc-950">
+          </label>
+        </div>
+      </section>
+
+      <div class="mt-6 grid gap-6 lg:grid-cols-3">
+        <section class="rounded-[2rem] bg-white/55 p-5 dark:bg-white/5">
+          <h3 class="text-xl font-black">4. Social icons</h3>
+          <p class="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">Small icons shown near the top of your public profile.</p>
+          <div class="mt-4 space-y-3">
+            <% socials.slice(0, 4).forEach((social, index) => { %>
+              <details class="rounded-3xl bg-white/65 p-3 dark:bg-black/20" <%= index === 0 ? 'open' : '' %>>
+                <summary class="cursor-pointer list-none font-black"><%= social.label || `Social ${index + 1}` %></summary>
+                <div class="mt-3 grid gap-2">
+                  <input name="socialPlatform" value="<%= social.platform %>" placeholder="Platform, e.g. Instagram" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+                  <input name="socialLabel" value="<%= social.label %>" placeholder="Accessible label" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+                  <input name="socialIcon" value="<%= social.icon %>" placeholder="Icon name, e.g. instagram" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+                  <input name="socialUrl" value="<%= social.url %>" placeholder="https://..." class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+                </div>
+              </details>
             <% }) %>
           </div>
-        </div>
-        <div>
-          <h3 class="mb-3 text-lg font-black">Tip jar</h3>
-          <div class="space-y-3 rounded-3xl bg-white/50 p-4 dark:bg-white/5">
-            <label class="flex items-center gap-2 font-bold"><input name="tipJarEnabled" type="checkbox" <%= user.tipJar.enabled ? 'checked' : '' %>> Enabled</label>
-            <input name="tipJarHeadline" value="<%= user.tipJar.headline %>" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
-            <input name="tipJarAmounts" value="<%= user.tipJar.suggestedAmounts.join(',') %>" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
-            <input name="tipJarCurrency" value="<%= user.tipJar.currency %>" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+        </section>
+        <section class="rounded-[2rem] bg-white/55 p-5 dark:bg-white/5">
+          <h3 class="text-xl font-black">5. Support box</h3>
+          <p class="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">Adds a simple tip jar card under your links.</p>
+          <div class="mt-4 space-y-3">
+            <label class="flex items-center gap-3 rounded-2xl bg-white/70 p-4 font-bold dark:bg-black/20"><input name="tipJarEnabled" type="checkbox" <%= user.tipJar.enabled ? 'checked' : '' %>> Show support box on my bio</label>
+            <input name="tipJarHeadline" value="<%= user.tipJar.headline %>" placeholder="Support my work" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+            <input name="tipJarAmounts" value="<%= user.tipJar.suggestedAmounts.join(',') %>" placeholder="Suggested amounts: 5,10,25" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+            <input name="tipJarCurrency" value="<%= user.tipJar.currency %>" placeholder="Currency, e.g. USD" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
           </div>
-        </div>
-        <div>
-          <h3 class="mb-3 text-lg font-black">Product shelf</h3>
-          <% products.slice(0, 2).forEach((product) => { %>
-            <div class="mb-3 grid gap-2 rounded-3xl bg-white/50 p-3 dark:bg-white/5">
-              <input name="productTitle" value="<%= product.title %>" placeholder="Product title" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
-              <textarea name="productDescription" placeholder="Description" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950"><%= product.description %></textarea>
-              <input name="productPrice" type="number" step="0.01" value="<%= product.price %>" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
-              <input name="productCurrency" value="<%= product.currency %>" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
-            </div>
+        </section>
+        <section class="rounded-[2rem] bg-white/55 p-5 dark:bg-white/5">
+          <h3 class="text-xl font-black">6. Product shelf</h3>
+          <p class="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">Optional cards for digital products displayed below the tip jar.</p>
+          <% products.slice(0, 2).forEach((product, index) => { %>
+            <details class="mt-4 rounded-3xl bg-white/65 p-3 dark:bg-black/20" <%= index === 0 ? 'open' : '' %>>
+              <summary class="cursor-pointer list-none font-black"><%= product.title || `Product ${index + 1}` %></summary>
+              <div class="mt-3 grid gap-2">
+                <input name="productTitle" value="<%= product.title %>" placeholder="Product title" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+                <textarea name="productDescription" placeholder="What visitors get" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950"><%= product.description %></textarea>
+                <input name="productPrice" type="number" step="0.01" value="<%= product.price %>" placeholder="Price" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+                <input name="productCurrency" value="<%= product.currency %>" placeholder="Currency" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+              </div>
+            </details>
           <% }) %>
-        </div>
+        </section>
       </div>
     </form>
   </section>
