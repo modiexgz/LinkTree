@@ -1,0 +1,75 @@
+<%- include('partials/head', { title, locale, isRtl, t, locales, flash }) %>
+<main class="mx-auto w-full max-w-7xl px-6 py-8">
+  <%- include('partials/marketing-nav', { t }) %>
+
+  <section class="grid items-center gap-10 py-16 lg:grid-cols-[0.9fr_1.1fr]">
+    <div>
+      <p class="mb-4 text-sm font-black uppercase tracking-[0.26em] text-fuchsia-600 dark:text-fuchsia-300">Templates</p>
+      <h1 class="text-5xl font-black leading-[0.95] tracking-tight sm:text-7xl">Start with a template built for your business.</h1>
+      <p class="mt-6 max-w-2xl text-lg leading-8 text-slate-600 dark:text-slate-300">Choose a layout for creators, stores, musicians, coaches, local businesses, podcasts, and marketplaces. Then customize colors, links, products, and gates from the dashboard.</p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <% categories.forEach((category) => { %>
+          <a href="#<%= category.toLowerCase() %>" class="rounded-full border border-slate-200 bg-white/70 px-4 py-2 text-sm font-black text-slate-700 transition-premium hover:scale-105 dark:border-white/10 dark:bg-white/10 dark:text-slate-200"><%= category %></a>
+        <% }) %>
+      </div>
+    </div>
+    <div class="grid gap-4 sm:grid-cols-2">
+      <% templates.slice(0, 4).forEach((template) => { %>
+        <div class="rounded-[2rem] bg-gradient-to-br <%= template.background %> p-4 shadow-premium">
+          <div class="rounded-[1.5rem] bg-white/70 p-4 backdrop-blur-xl">
+            <div class="mx-auto h-16 w-16 rounded-full" style="background:<%= template.accent %>"></div>
+            <p class="mt-3 text-center font-black"><%= template.name %></p>
+            <div class="mt-4 space-y-2">
+              <% template.links.forEach((link) => { %>
+                <div class="rounded-2xl bg-white px-3 py-2 text-center text-xs font-black"><%= link %></div>
+              <% }) %>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </section>
+
+  <section class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <% templates.forEach((template) => { %>
+      <article id="<%= template.category.toLowerCase() %>" class="glass-card overflow-hidden rounded-[2.25rem]">
+        <div class="bg-gradient-to-br <%= template.background %> p-5">
+          <div class="rounded-[1.75rem] bg-white/75 p-5 text-slate-950 shadow-premium backdrop-blur-xl">
+            <div class="flex items-center justify-between">
+              <div class="h-14 w-14 rounded-full" style="background:<%= template.accent %>"></div>
+              <span class="rounded-full bg-slate-950 px-3 py-1 text-xs font-black text-white"><%= template.category %></span>
+            </div>
+            <div class="mt-5 space-y-2">
+              <% template.links.forEach((link) => { %>
+                <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black"><%= link %></div>
+              <% }) %>
+            </div>
+          </div>
+        </div>
+        <div class="p-6">
+          <h2 class="text-2xl font-black"><%= template.name %></h2>
+          <p class="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300"><%= template.description %></p>
+          <div class="mt-5 flex gap-3">
+            <a href="/auth/signup" class="premium-button flex-1 rounded-2xl bg-slate-950 px-4 py-3 text-center text-sm font-black text-white dark:bg-white dark:text-black">Use template</a>
+            <a href="/pricing" class="premium-button rounded-2xl border border-slate-200 bg-white/70 px-4 py-3 text-sm font-black dark:border-white/10 dark:bg-white/10">Plans</a>
+          </div>
+        </div>
+      </article>
+    <% }) %>
+  </section>
+
+  <section class="my-16 grid gap-6 lg:grid-cols-3">
+    <% [
+      ['Conversion-first', 'Templates keep the number of links focused so visitors know what to click.'],
+      ['Mobile-native', 'Every design is previewed as an iPhone-style profile in the dashboard.'],
+      ['Easy to monetize', 'Add products, tips, email gates, bookings, and launch links after choosing a template.']
+    ].forEach((item) => { %>
+      <div class="rounded-[2rem] bg-slate-950 p-6 text-white shadow-obsidian dark:bg-white dark:text-black">
+        <h3 class="text-xl font-black"><%= item[0] %></h3>
+        <p class="mt-3 text-sm leading-6 text-white/60 dark:text-black/60"><%= item[1] %></p>
+      </div>
+    <% }) %>
+  </section>
+</main>
+<%- include('partials/controls', { locales, locale, isRtl, t }) %>
+<%- include('partials/footer-scripts') %>

@@ -1,0 +1,64 @@
+<%- include('partials/head', { title, locale, isRtl, t, locales, flash }) %>
+<main class="mx-auto w-full max-w-7xl px-6 py-8">
+  <%- include('partials/marketing-nav', { t }) %>
+
+  <section class="py-16 text-center">
+    <p class="mb-4 text-sm font-black uppercase tracking-[0.26em] text-emerald-600 dark:text-emerald-300">Marketplace</p>
+    <h1 class="mx-auto max-w-5xl text-5xl font-black leading-[0.95] tracking-tight sm:text-7xl">Connect every part of your creator business.</h1>
+    <p class="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-600 dark:text-slate-300">Discover content, commerce, payment, booking, audience, and analytics integrations that make a bio page more than a list of links.</p>
+    <div class="mt-8 flex flex-wrap justify-center gap-3">
+      <% ['Content', 'Social', 'Commerce', 'Payments', 'Bookings', 'Audience', 'Music', 'Analytics'].forEach((category) => { %>
+        <a href="#<%= category.toLowerCase() %>" class="rounded-full border border-slate-200 bg-white/70 px-4 py-2 text-sm font-black text-slate-700 transition-premium hover:scale-105 dark:border-white/10 dark:bg-white/10 dark:text-slate-200"><%= category %></a>
+      <% }) %>
+    </div>
+  </section>
+
+  <section class="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+    <% apps.forEach((app) => { %>
+      <article id="<%= app.category.toLowerCase() %>" class="glass-card premium-button rounded-[2rem] p-6">
+        <div class="flex items-start justify-between gap-4">
+          <span class="grid h-14 w-14 place-items-center rounded-2xl bg-slate-950 text-white dark:bg-white dark:text-black"><i data-lucide="<%= app.icon %>" class="h-6 w-6"></i></span>
+          <span class="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-black text-emerald-700 dark:text-emerald-300"><%= app.plan %></span>
+        </div>
+        <p class="mt-5 text-xs font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400"><%= app.category %></p>
+        <h2 class="mt-2 text-2xl font-black"><%= app.name %></h2>
+        <p class="mt-3 min-h-24 text-sm leading-6 text-slate-600 dark:text-slate-300"><%= app.description %></p>
+        <button class="mt-5 w-full rounded-2xl border border-slate-200 bg-white/70 px-4 py-3 text-sm font-black transition-premium hover:scale-[1.02] dark:border-white/10 dark:bg-white/10">Add to bio</button>
+      </article>
+    <% }) %>
+  </section>
+
+  <section class="mt-16 grid items-center gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+    <div class="glass-card rounded-[2.5rem] p-8">
+      <p class="text-sm font-black uppercase tracking-[0.24em] text-blue-600 dark:text-blue-300">Marketplace logic</p>
+      <h2 class="mt-4 text-4xl font-black tracking-tight sm:text-5xl">Each integration becomes a high-converting block on the bio page.</h2>
+      <p class="mt-5 text-slate-600 dark:text-slate-300">A professional link-in-bio product should sell outcomes: more subscribers, more bookings, more product clicks, more purchases, and cleaner audience journeys. These marketplace blocks are designed around those outcomes.</p>
+      <div class="mt-6 grid gap-3 sm:grid-cols-2">
+        <% ['Embed content previews', 'Capture leads', 'Send traffic to stores', 'Track revenue events'].forEach((item) => { %>
+          <div class="rounded-2xl bg-white/60 p-4 font-black dark:bg-white/5"><%= item %></div>
+        <% }) %>
+      </div>
+    </div>
+    <div class="rounded-[2.5rem] bg-slate-950 p-6 text-white shadow-obsidian">
+      <div class="rounded-[2rem] bg-white/10 p-5">
+        <p class="text-sm font-black text-white/50">Featured bundle</p>
+        <h3 class="mt-2 text-3xl font-black">Creator Commerce Stack</h3>
+        <p class="mt-3 text-sm leading-6 text-white/60">Stripe + Shopify + Mailchimp + Analytics for launches, email capture, product drops, and conversion tracking.</p>
+        <div class="mt-5 space-y-3">
+          <% ['Checkout overlay', 'Newsletter gate', 'Product shelf', 'Revenue analytics'].forEach((item) => { %>
+            <div class="rounded-2xl bg-white/10 px-4 py-3 text-sm font-black"><%= item %></div>
+          <% }) %>
+        </div>
+        <a href="/auth/signup" class="premium-button mt-6 flex justify-center rounded-2xl bg-white px-5 py-4 text-sm font-black text-black">Install bundle</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="my-16 rounded-[2.5rem] bg-lime-200 p-8 text-center text-slate-950 shadow-premium">
+    <h2 class="text-4xl font-black tracking-tight">Build a bio page that works like a sales funnel.</h2>
+    <p class="mx-auto mt-4 max-w-2xl leading-7 text-slate-700">Start with templates, connect marketplace blocks, add pricing tiers, and use analytics to improve what visitors click.</p>
+    <a href="/pricing" class="premium-button mt-8 inline-flex rounded-full bg-slate-950 px-7 py-4 text-sm font-black text-white">See plans</a>
+  </section>
+</main>
+<%- include('partials/controls', { locales, locale, isRtl, t }) %>
+<%- include('partials/footer-scripts') %>
