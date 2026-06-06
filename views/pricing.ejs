@@ -1,0 +1,71 @@
+<%- include('partials/head', { title, locale, isRtl, t, locales, flash }) %>
+<main class="mx-auto w-full max-w-7xl px-6 py-8">
+  <%- include('partials/marketing-nav', { t }) %>
+
+  <section class="py-16 text-center">
+    <p class="mb-4 text-sm font-black uppercase tracking-[0.26em] text-blue-600 dark:text-blue-300">Pricing</p>
+    <h1 class="mx-auto max-w-4xl text-5xl font-black leading-[0.95] tracking-tight sm:text-7xl">Simple plans for every stage of your creator business.</h1>
+    <p class="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-600 dark:text-slate-300">Start free, then upgrade when you need deeper customization, gated content, monetization, or team-scale analytics.</p>
+    <div class="mt-8 inline-flex rounded-full border border-slate-200 bg-white/75 p-1 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/10">
+      <span class="rounded-full bg-slate-950 px-5 py-2 text-sm font-black text-white dark:bg-white dark:text-black">Annual - save 20%</span>
+      <span class="px-5 py-2 text-sm font-black text-slate-500 dark:text-slate-300">Monthly available</span>
+    </div>
+  </section>
+
+  <section class="grid gap-5 lg:grid-cols-4">
+    <% plans.forEach((plan) => { %>
+      <article class="relative rounded-[2rem] border p-6 transition-premium hover:-translate-y-1 <%= plan.featured ? 'border-slate-950 bg-slate-950 text-white shadow-obsidian dark:border-white dark:bg-white dark:text-black' : 'glass-card' %>">
+        <% if (plan.featured) { %>
+          <span class="absolute right-5 top-5 rounded-full bg-lime-300 px-3 py-1 text-xs font-black text-slate-950">Most popular</span>
+        <% } %>
+        <h2 class="text-2xl font-black"><%= plan.name %></h2>
+        <p class="mt-2 min-h-12 text-sm leading-6 <%= plan.featured ? 'text-white/65 dark:text-black/65' : 'text-slate-600 dark:text-slate-300' %>"><%= plan.audience %></p>
+        <div class="mt-6">
+          <span class="text-5xl font-black">$<%= plan.priceAnnual %></span>
+          <span class="text-sm font-bold opacity-65">/mo billed annually</span>
+        </div>
+        <% if (plan.priceMonthly > 0) { %>
+          <p class="mt-1 text-sm font-bold opacity-65">or $<%= plan.priceMonthly %>/mo monthly</p>
+        <% } else { %>
+          <p class="mt-1 text-sm font-bold opacity-65">free forever</p>
+        <% } %>
+        <p class="mt-5 text-sm leading-6 opacity-80"><%= plan.description %></p>
+        <a href="/auth/signup" class="premium-button mt-6 flex items-center justify-center rounded-2xl px-5 py-4 text-sm font-black <%= plan.featured ? 'bg-white text-black dark:bg-black dark:text-white' : 'bg-slate-950 text-white dark:bg-white dark:text-black' %>"><%= plan.cta %></a>
+        <ul class="mt-6 space-y-3 text-sm font-bold">
+          <% plan.features.forEach((feature) => { %>
+            <li class="flex gap-3"><i data-lucide="check" class="mt-0.5 h-4 w-4 shrink-0 text-emerald-500"></i><span><%= feature %></span></li>
+          <% }) %>
+        </ul>
+      </article>
+    <% }) %>
+  </section>
+
+  <section class="mt-16 grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
+    <div class="rounded-[2.5rem] bg-lime-200 p-8 text-slate-950 shadow-premium">
+      <p class="text-sm font-black uppercase tracking-[0.24em] text-slate-700">Built to make money</p>
+      <h2 class="mt-4 text-4xl font-black leading-tight">Monetization features pay for the plan when your bio converts.</h2>
+      <p class="mt-4 leading-7 text-slate-700">Use product links, tip jars, gated content, newsletter capture, scheduled launches, and analytics to turn social traffic into revenue.</p>
+    </div>
+    <div class="grid gap-4 sm:grid-cols-2">
+      <% [
+        ['Product checkout overlay', 'Sell templates, presets, courses, music, guides, or downloads.'],
+        ['Gated links', 'Require a password, age confirmation, or email signup.'],
+        ['Launch scheduling', 'Show links only during campaigns, events, or limited drops.'],
+        ['Conversion analytics', 'Know which link, country, or referrer drives revenue.']
+      ].forEach((item) => { %>
+        <div class="glass-card rounded-[2rem] p-6">
+          <h3 class="font-black"><%= item[0] %></h3>
+          <p class="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300"><%= item[1] %></p>
+        </div>
+      <% }) %>
+    </div>
+  </section>
+
+  <section class="my-16 rounded-[2.5rem] bg-slate-950 p-8 text-center text-white shadow-obsidian dark:bg-white dark:text-black">
+    <h2 class="text-4xl font-black tracking-tight">Ready to turn your link in bio into a business?</h2>
+    <p class="mx-auto mt-4 max-w-2xl text-white/60 dark:text-black/60">Launch free today. Upgrade when you want premium customization, commerce, and analytics.</p>
+    <a href="/auth/signup" class="premium-button mt-8 inline-flex rounded-full bg-white px-7 py-4 text-sm font-black text-black dark:bg-black dark:text-white">Start free</a>
+  </section>
+</main>
+<%- include('partials/controls', { locales, locale, isRtl, t }) %>
+<%- include('partials/footer-scripts') %>

@@ -1,0 +1,35 @@
+{
+  "name": "premium-linktree-clone",
+  "version": "1.0.0",
+  "description": "A premium multi-tenant Linktree-style SaaS built with Express, MongoDB, Tailwind CSS, and vanilla JavaScript.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "check": "node --check server.js && node --check routes/auth.js && node --check routes/admin.js && node --check routes/bio.js && node --check routes/api.js && node --check models/User.js && node --check models/Link.js && node --check models/Analytics.js"
+  },
+  "keywords": [
+    "linktree",
+    "express",
+    "mongoose",
+    "tailwind",
+    "saas"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "latest",
+    "connect-mongo": "latest",
+    "dotenv": "latest",
+    "ejs": "latest",
+    "express": "latest",
+    "express-session": "latest",
+    "method-override": "latest",
+    "mongoose": "latest",
+    "multer": "latest"
+  },
+  "devDependencies": {
+    "mongodb-memory-server-core": "^11.2.0",
+    "nodemon": "latest"
+  }
+}

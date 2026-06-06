@@ -1,0 +1,37 @@
+<%- include('partials/head', { title, locale, isRtl, t, locales, flash }) %>
+<main class="grid min-h-screen place-items-center px-6 py-12">
+  <section class="w-full max-w-xl">
+    <a href="/" class="mx-auto mb-8 flex w-max items-center gap-3 text-lg font-black">
+      <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-black text-white dark:bg-white dark:text-black"><i data-lucide="sparkles" class="h-5 w-5"></i></span>
+      <%= t('brand') %>
+    </a>
+    <%- include('partials/flash', { flash }) %>
+    <div class="glass-card rounded-[2rem] p-8">
+      <p class="mb-2 text-sm font-bold uppercase tracking-[0.24em] text-fuchsia-600 dark:text-fuchsia-300">Creator workspace</p>
+      <h1 class="text-3xl font-black tracking-tight"><%= t('signup') %></h1>
+      <p class="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">Your tenant, dashboard, public profile, starter links, products, and analytics are created instantly.</p>
+      <form action="/auth/signup" method="post" class="mt-8 grid gap-4 sm:grid-cols-2">
+        <label class="block">
+          <span class="text-sm font-bold">Name</span>
+          <input name="name" value="<%= form.name || '' %>" required class="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none transition-premium focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-white/10 dark:bg-zinc-950">
+        </label>
+        <label class="block">
+          <span class="text-sm font-bold">Username</span>
+          <input name="username" value="<%= form.username || '' %>" required minlength="3" pattern="[a-zA-Z0-9_.-]+" class="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none transition-premium focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-white/10 dark:bg-zinc-950">
+        </label>
+        <label class="block sm:col-span-2">
+          <span class="text-sm font-bold">Email</span>
+          <input name="email" type="email" value="<%= form.email || '' %>" required class="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none transition-premium focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-white/10 dark:bg-zinc-950">
+        </label>
+        <label class="block sm:col-span-2">
+          <span class="text-sm font-bold">Password</span>
+          <input name="password" type="password" required minlength="8" class="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none transition-premium focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-white/10 dark:bg-zinc-950">
+        </label>
+        <button class="premium-button rounded-2xl bg-slate-950 px-5 py-4 font-black text-white shadow-premium dark:bg-white dark:text-black sm:col-span-2">Create premium profile</button>
+      </form>
+      <p class="mt-6 text-center text-sm font-semibold text-slate-600 dark:text-slate-300">Already have an account? <a href="/auth/login" class="text-blue-600 dark:text-blue-300">Log in</a></p>
+    </div>
+  </section>
+</main>
+<%- include('partials/controls', { locales, locale, isRtl, t }) %>
+<%- include('partials/footer-scripts') %>

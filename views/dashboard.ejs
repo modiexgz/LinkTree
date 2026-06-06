@@ -1,0 +1,557 @@
+<%- include('partials/head', { title, locale, isRtl, t, locales, flash }) %>
+<% const fmtDate = (value) => value ? new Date(value).toISOString().slice(0, 16) : ''; %>
+<% const socials = user.socialLinks.length ? user.socialLinks : [{ platform: 'instagram', label: 'Instagram', url: '', icon: 'instagram' }, { platform: 'youtube', label: 'YouTube', url: '', icon: 'youtube' }, { platform: 'github', label: 'GitHub', url: '', icon: 'github' }]; %>
+<% const products = user.products.length ? user.products : [{ title: '', description: '', price: 0, currency: 'USD' }]; %>
+<main class="mx-auto min-h-screen w-full max-w-7xl px-5 py-6 sm:px-8">
+  <nav class="sticky top-4 z-40 mb-8 flex flex-wrap items-center justify-between gap-4 rounded-[1.75rem] border border-white/60 bg-white/75 px-5 py-4 shadow-premium backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/75">
+    <a href="/admin" class="flex items-center gap-3 text-lg font-black">
+      <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-black text-white dark:bg-white dark:text-black"><i data-lucide="sparkles" class="h-5 w-5"></i></span>
+      <%= t('brand') %>
+    </a>
+    <div class="flex flex-wrap items-center gap-2 text-sm font-bold">
+      <a href="#analytics" class="rounded-full px-4 py-2 text-slate-600 transition-premium hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10"><%= t('analytics') %></a>
+      <a href="#links" class="rounded-full px-4 py-2 text-slate-600 transition-premium hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10"><%= t('links') %></a>
+      <a href="#design" class="rounded-full px-4 py-2 text-slate-600 transition-premium hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10"><%= t('design') %></a>
+      <a href="/templates" class="rounded-full px-4 py-2 text-slate-600 transition-premium hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10">Templates</a>
+      <a href="/marketplace" class="rounded-full px-4 py-2 text-slate-600 transition-premium hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10">Marketplace</a>
+      <a href="/pricing" class="rounded-full bg-lime-300 px-4 py-2 text-slate-950 transition-premium hover:scale-105">Upgrade</a>
+      <a href="/<%= user.username %>" target="_blank" class="premium-button rounded-full bg-slate-950 px-4 py-2 text-white dark:bg-white dark:text-black"><%= t('profile') %></a>
+      <form action="/auth/logout" method="post">
+        <button class="rounded-full px-4 py-2 text-slate-500 transition-premium hover:bg-rose-50 hover:text-rose-600 dark:text-slate-300 dark:hover:bg-rose-950/40"><%= t('logout') %></button>
+      </form>
+    </div>
+  </nav>
+
+  <%- include('partials/flash', { flash }) %>
+
+  <button type="button" data-modal-open="#iphone-preview-drawer" class="premium-button fixed bottom-24 left-5 z-40 inline-flex items-center gap-2 rounded-full bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-premium dark:bg-white dark:text-black lg:left-auto lg:right-5">
+    <i data-lucide="smartphone" class="h-4 w-4"></i>
+    Live iPhone preview
+  </button>
+
+  <aside id="iphone-preview-drawer" class="preview-drawer fixed inset-y-0 right-0 z-[60] w-full max-w-[430px] overflow-y-auto border-l border-white/20 bg-white/85 p-5 shadow-obsidian backdrop-blur-2xl dark:bg-zinc-950/90">
+    <div class="mb-4 flex items-center justify-between">
+      <div>
+        <p class="text-xs font-black uppercase tracking-[0.22em] text-blue-600 dark:text-blue-300">Live builder</p>
+        <h2 class="text-2xl font-black">iPhone preview</h2>
+      </div>
+      <button type="button" data-modal-close class="rounded-full bg-slate-100 p-3 text-slate-700 transition-premium hover:scale-105 dark:bg-white/10 dark:text-white">
+        <i data-lucide="x" class="h-5 w-5"></i>
+      </button>
+    </div>
+    <p class="mb-5 rounded-2xl bg-blue-50 p-4 text-sm font-semibold leading-6 text-blue-800 dark:bg-blue-500/10 dark:text-blue-200">
+      Change your name, bio, background, button style, or draft link. This phone updates instantly before you save.
+    </p>
+    <div class="mx-auto w-full max-w-[330px] rounded-[3rem] border-[10px] border-slate-950 bg-slate-950 p-2 shadow-obsidian dark:border-zinc-800">
+      <div class="relative min-h-[640px] overflow-hidden rounded-[2.25rem] bg-slate-100 text-slate-950" data-live-phone style="--accent:<%= user.profileTheme.accentColor %>;">
+        <div class="absolute left-1/2 top-2 z-20 h-6 w-24 -translate-x-1/2 rounded-full bg-black/80"></div>
+        <div data-live-bg class="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-fuchsia-100"></div>
+        <div class="absolute inset-0 bg-white/35 backdrop-blur-[1px] dark:bg-black/30"></div>
+        <div data-live-font class="relative z-10 px-5 pb-8 pt-12 font-sans">
+          <div class="mx-auto flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border border-white/70 bg-slate-950 text-2xl font-black text-white shadow-premium">
+            <% if (user.avatarUrl) { %>
+              <img data-live-avatar src="<%= user.avatarUrl %>" alt="" class="h-full w-full object-cover">
+            <% } else { %>
+              <span data-live-avatar-fallback><%= user.name.split(' ').map((part) => part[0]).slice(0, 2).join('').toUpperCase() %></span>
+              <img data-live-avatar src="" alt="" class="hidden h-full w-full object-cover">
+            <% } %>
+          </div>
+          <h3 data-live-name class="mt-4 text-center text-2xl font-black tracking-tight"><%= user.name %></h3>
+          <p data-live-bio class="mx-auto mt-2 max-w-[250px] text-center text-sm leading-6 text-slate-600"><%= user.bio %></p>
+          <div class="mt-4 flex justify-center gap-2">
+            <% socials.filter((social) => social.url).slice(0, 4).forEach((social) => { %>
+              <span class="grid h-9 w-9 place-items-center rounded-full bg-white/65 text-slate-700 shadow-sm backdrop-blur-md">
+                <i data-lucide="<%= social.icon || 'globe' %>" class="h-4 w-4"></i>
+              </span>
+            <% }) %>
+          </div>
+          <div data-live-links class="mt-6 space-y-3">
+            <% links.slice(0, 4).forEach((link) => { %>
+              <div class="premium-button live-preview-link bio-button-<%= user.profileTheme.buttonStyle %> flex items-center gap-3 rounded-[1.35rem] border border-white/40 p-3 text-sm font-black backdrop-blur-xl">
+                <span class="grid h-10 w-10 place-items-center rounded-2xl bg-white/45"><i data-lucide="<%= link.icon || 'link' %>" class="h-4 w-4"></i></span>
+                <span class="min-w-0 flex-1 truncate"><%= link.title %></span>
+                <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
+              </div>
+            <% }) %>
+            <div data-live-draft-link class="premium-button live-preview-link bio-button-<%= user.profileTheme.buttonStyle %> hidden items-center gap-3 rounded-[1.35rem] border border-white/40 p-3 text-sm font-black backdrop-blur-xl">
+              <span class="grid h-10 w-10 place-items-center rounded-2xl bg-white/45"><i data-live-draft-icon data-lucide="link" class="h-4 w-4"></i></span>
+              <span class="min-w-0 flex-1">
+                <span data-live-draft-title class="block truncate">New link</span>
+                <span data-live-draft-description class="block truncate text-[11px] font-semibold opacity-60"></span>
+              </span>
+              <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
+            </div>
+          </div>
+          <div data-live-support class="mt-4 rounded-[1.35rem] border border-white/50 bg-white/65 p-4 shadow-sm backdrop-blur-xl <%= user.tipJar.enabled ? '' : 'hidden' %>">
+            <p data-live-tip-headline class="font-black"><%= user.tipJar.headline %></p>
+            <div class="mt-3 grid grid-cols-3 gap-2 text-center text-xs font-black">
+              <% (user.tipJar.suggestedAmounts.length ? user.tipJar.suggestedAmounts : [5, 10, 25]).slice(0, 3).forEach((amount) => { %>
+                <span class="rounded-full bg-slate-950 px-2 py-2 text-white"><%= user.tipJar.currency %> <%= amount %></span>
+              <% }) %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <header class="grid gap-6 lg:grid-cols-[1fr_380px]">
+    <section class="glass-card rounded-[2.25rem] p-8">
+      <div class="flex flex-wrap items-start justify-between gap-5">
+        <div>
+          <p class="mb-3 inline-flex rounded-full bg-blue-500/10 px-3 py-1 text-xs font-black uppercase tracking-[0.22em] text-blue-600 dark:text-blue-300"><%= user.tenant.plan %> tenant</p>
+          <h1 class="text-4xl font-black tracking-tight sm:text-6xl"><%= t('dashboard') %></h1>
+          <p class="mt-4 max-w-2xl text-slate-600 dark:text-slate-300">Manage <strong><%= user.tenant.displayName || user.name %></strong>, shape the public experience, and watch visitor behavior become actionable.</p>
+        </div>
+        <button data-copy="/<%= user.username %>" class="premium-button inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-black dark:border-white/10 dark:bg-white/10">
+          <i data-lucide="copy" class="h-4 w-4"></i>
+          Copy profile
+        </button>
+      </div>
+      <div id="analytics" class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="rounded-3xl bg-white/70 p-5 dark:bg-white/5">
+          <p class="text-sm font-bold text-slate-500 dark:text-slate-400"><%= t('totalViews') %></p>
+          <p class="mt-2 text-4xl font-black"><%= analytics.profileViews %></p>
+        </div>
+        <div class="rounded-3xl bg-white/70 p-5 dark:bg-white/5">
+          <p class="text-sm font-bold text-slate-500 dark:text-slate-400"><%= t('uniqueVisitors') %></p>
+          <p class="mt-2 text-4xl font-black"><%= analytics.uniqueVisitors %></p>
+        </div>
+        <div class="rounded-3xl bg-white/70 p-5 dark:bg-white/5">
+          <p class="text-sm font-bold text-slate-500 dark:text-slate-400">Clicks</p>
+          <p class="mt-2 text-4xl font-black"><%= analytics.linkClicks %></p>
+        </div>
+        <div class="rounded-3xl bg-white/70 p-5 dark:bg-white/5">
+          <p class="text-sm font-bold text-slate-500 dark:text-slate-400"><%= t('ctr') %></p>
+          <p class="mt-2 text-4xl font-black"><%= analytics.ctr %>%</p>
+        </div>
+      </div>
+      <div class="mt-6 rounded-[2rem] border border-slate-200 bg-white/60 p-4 dark:border-white/10 dark:bg-black/20">
+        <canvas data-analytics-chart data-series='<%- JSON.stringify(analytics.series) %>' class="h-56 w-full"></canvas>
+      </div>
+    </section>
+
+    <aside class="glass-card rounded-[2.25rem] p-6">
+      <p class="mb-4 text-sm font-black uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400"><%= t('livePreview') %></p>
+      <div data-tilt class="overflow-hidden rounded-[2rem] border border-slate-200 bg-slate-950 p-4 text-white shadow-obsidian dark:border-white/10">
+        <div class="rounded-[1.5rem] bg-gradient-to-br from-zinc-900 to-black p-5">
+          <div class="mx-auto h-20 w-20 overflow-hidden rounded-full bg-white/10">
+            <% if (user.avatarUrl) { %>
+              <img src="<%= user.avatarUrl %>" alt="" class="h-full w-full object-cover">
+            <% } %>
+          </div>
+          <h2 class="mt-4 text-center text-xl font-black"><%= user.name %></h2>
+          <p class="mt-1 text-center text-sm text-white/55"><%= user.bio %></p>
+          <div class="mt-5 space-y-2">
+            <% links.slice(0, 3).forEach((link) => { %>
+              <div class="flex items-center gap-3 rounded-2xl bg-white/10 p-3 text-sm font-bold">
+                <i data-lucide="<%= link.icon || 'link' %>" class="h-4 w-4"></i>
+                <%= link.title %>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </header>
+
+  <section class="mt-8 grid gap-6 lg:grid-cols-3">
+    <div class="glass-card rounded-[2rem] p-6">
+      <h2 class="text-xl font-black"><%= t('topLinks') %></h2>
+      <div class="mt-5 space-y-3">
+        <% if (analytics.topLinks.length === 0) { %>
+          <div class="skeleton h-16 rounded-2xl"></div>
+        <% } %>
+        <% analytics.topLinks.forEach((item) => { %>
+          <div class="flex items-center justify-between rounded-2xl bg-white/60 p-4 dark:bg-white/5">
+            <span class="flex items-center gap-3 font-bold"><i data-lucide="<%= item.icon || 'link' %>" class="h-4 w-4"></i><%= item.title %></span>
+            <span class="rounded-full bg-slate-950 px-3 py-1 text-xs font-black text-white dark:bg-white dark:text-black"><%= item.clicks %></span>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+    <div class="glass-card rounded-[2rem] p-6">
+      <h2 class="text-xl font-black"><%= t('referrers') %></h2>
+      <div class="mt-5 space-y-3">
+        <% (analytics.referrers.length ? analytics.referrers : [{ _id: 'Direct', count: 0 }]).forEach((item) => { %>
+          <div class="flex items-center justify-between rounded-2xl bg-white/60 p-4 dark:bg-white/5">
+            <span class="font-bold"><%= item._id || 'Direct' %></span>
+            <span class="text-sm font-black text-slate-500 dark:text-slate-300"><%= item.count %></span>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+    <div class="glass-card rounded-[2rem] p-6">
+      <h2 class="text-xl font-black"><%= t('countries') %></h2>
+      <div class="mt-5 space-y-3">
+        <% (analytics.countries.length ? analytics.countries : [{ _id: 'Unknown', count: 0 }]).forEach((item) => { %>
+          <div class="flex items-center justify-between rounded-2xl bg-white/60 p-4 dark:bg-white/5">
+            <span class="font-bold"><%= item._id || 'Unknown' %></span>
+            <span class="text-sm font-black text-slate-500 dark:text-slate-300"><%= item.count %></span>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+
+  <section id="links" class="mt-8 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+    <form action="/admin/links" method="post" class="glass-card rounded-[2rem] p-6">
+      <p class="mb-2 text-sm font-black uppercase tracking-[0.22em] text-blue-600 dark:text-blue-300">Add something to your bio</p>
+      <h2 class="text-2xl font-black">What do you want visitors to do?</h2>
+      <p class="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">Pick the purpose first. The extra settings below explain exactly what will appear on your public bio page.</p>
+      <div class="mt-5 grid gap-4">
+        <label class="block">
+          <span class="mb-2 block text-sm font-black">Button title visitors see</span>
+          <input name="title" data-live-link-title placeholder="Watch my newest video" required class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+        </label>
+        <label class="block">
+          <span class="mb-2 block text-sm font-black">Where the button sends them</span>
+          <input name="url" placeholder="https://example.com" required class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+        </label>
+        <label class="block">
+          <span class="mb-2 block text-sm font-black">Short note under the title</span>
+          <textarea name="description" data-live-link-description placeholder="Optional: one sentence that explains this link." class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950"></textarea>
+        </label>
+
+        <div>
+          <span class="mb-3 block text-sm font-black">Choose the link type</span>
+          <div class="grid gap-3 sm:grid-cols-2">
+            <% [
+              { value: 'standard', icon: 'link', title: 'Simple link', body: 'A clean button that opens your URL.' },
+              { value: 'animated', icon: 'sparkles', title: 'Attention link', body: 'Adds gentle motion to highlight an important action.' },
+              { value: 'scheduled', icon: 'calendar-clock', title: 'Scheduled link', body: 'Shows only between the start and end dates below.' },
+              { value: 'gated', icon: 'lock', title: 'Locked link', body: 'Requires password, age confirmation, or newsletter signup.' },
+              { value: 'support', icon: 'heart', title: 'Support link', body: 'Use this for donations, tips, or support pages.' },
+              { value: 'product', icon: 'shopping-bag', title: 'Product link', body: 'Shows price and opens the checkout overlay simulation.' }
+            ].forEach((type, index) => { %>
+              <label class="cursor-pointer">
+                <input class="peer sr-only" type="radio" name="type" value="<%= type.value %>" <%= index === 0 ? 'checked' : '' %>>
+                <span class="block rounded-3xl border border-slate-200 bg-white/70 p-4 transition-premium peer-checked:border-slate-950 peer-checked:bg-slate-950 peer-checked:text-white dark:border-white/10 dark:bg-white/5 dark:peer-checked:border-white dark:peer-checked:bg-white dark:peer-checked:text-black">
+                  <span class="flex items-center gap-3 font-black"><i data-lucide="<%= type.icon %>" class="h-5 w-5"></i><%= type.title %></span>
+                  <span class="mt-2 block text-xs leading-5 opacity-70"><%= type.body %></span>
+                </span>
+              </label>
+            <% }) %>
+          </div>
+        </div>
+
+        <div class="rounded-3xl bg-white/55 p-4 dark:bg-white/5">
+          <h3 class="font-black">Display settings</h3>
+          <p class="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">These change how the button looks in your bio profile.</p>
+          <div class="mt-3 grid gap-3 sm:grid-cols-3">
+            <label class="block">
+              <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Icon</span>
+              <select name="icon" data-live-link-icon class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+                <% [['link', 'Link'], ['play-circle', 'Video'], ['mail', 'Newsletter'], ['shopping-bag', 'Product'], ['calendar-check', 'Booking'], ['heart', 'Support'], ['music', 'Music'], ['globe', 'Website']].forEach((item) => { %>
+                  <option value="<%= item[0] %>"><%= item[1] %></option>
+                <% }) %>
+              </select>
+            </label>
+            <label class="block">
+              <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Motion</span>
+              <select name="animation" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+                <option value="none">None - calm</option>
+                <option value="leap">Leap - best for launches</option>
+                <option value="pulse">Pulse - subtle attention</option>
+                <option value="float">Float - soft movement</option>
+              </select>
+            </label>
+            <label class="block">
+              <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Position</span>
+              <input name="order" type="number" value="0" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+            </label>
+          </div>
+          <label class="mt-3 flex items-center gap-3 rounded-2xl bg-white/70 p-4 font-bold dark:bg-black/20"><input name="pinned" type="checkbox"> Pin this near the top of my bio</label>
+        </div>
+
+        <details class="rounded-3xl bg-white/55 p-4 dark:bg-white/5">
+          <summary class="cursor-pointer list-none font-black">Optional: scheduling</summary>
+          <p class="mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">Use this for launches, tickets, limited drops, or seasonal links.</p>
+          <div class="mt-3 grid gap-3 sm:grid-cols-2">
+            <label class="block">
+              <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Show starting</span>
+              <input name="startsAt" type="datetime-local" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+            </label>
+            <label class="block">
+              <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Hide after</span>
+              <input name="endsAt" type="datetime-local" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+            </label>
+          </div>
+        </details>
+
+        <details class="rounded-3xl bg-white/55 p-4 dark:bg-white/5">
+          <summary class="cursor-pointer list-none font-black">Optional: unlock gate</summary>
+          <p class="mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">Visitors must complete this step before the destination opens.</p>
+          <div class="mt-3 grid gap-3 sm:grid-cols-2">
+            <select name="gateType" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+              <option value="none">No gate - open immediately</option>
+              <option value="password">Password required</option>
+              <option value="age">Age confirmation required</option>
+              <option value="newsletter">Email signup required</option>
+            </select>
+            <input name="gatePassword" placeholder="Password visitors enter" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+            <input name="newsletterLabel" placeholder="Message for newsletter unlock" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+            <input name="ageMinimum" type="number" value="18" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+          </div>
+        </details>
+
+        <details class="rounded-3xl bg-white/55 p-4 dark:bg-white/5">
+          <summary class="cursor-pointer list-none font-black">Optional: product checkout display</summary>
+          <p class="mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">If you choose Product link, these fields appear in the checkout overlay.</p>
+          <div class="mt-3 grid gap-3 sm:grid-cols-3">
+            <input name="productLabel" placeholder="Digital product, course, template..." class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+            <input name="price" type="number" step="0.01" placeholder="Price" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+            <input name="currency" value="USD" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+          </div>
+        </details>
+
+        <button class="premium-button rounded-2xl bg-slate-950 px-5 py-4 font-black text-white shadow-premium dark:bg-white dark:text-black">Add this to my bio</button>
+      </div>
+    </form>
+
+    <div class="space-y-4">
+      <% links.forEach((link) => { %>
+        <details class="glass-card rounded-[2rem] p-5" <%= links.indexOf(link) === 0 ? 'open' : '' %>>
+          <summary class="flex cursor-pointer list-none items-center justify-between gap-4">
+            <span class="flex items-center gap-3 text-lg font-black"><i data-lucide="<%= link.icon || 'link' %>" class="h-5 w-5"></i><%= link.title %></span>
+            <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-black uppercase text-slate-500 dark:bg-white/10 dark:text-slate-300"><%= link.type %></span>
+          </summary>
+          <form action="/admin/links/<%= link._id %>" method="post" class="mt-5 grid gap-3">
+            <input name="title" value="<%= link.title %>" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+            <input name="url" value="<%= link.url %>" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+            <textarea name="description" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950"><%= link.description %></textarea>
+            <div class="grid gap-3 sm:grid-cols-3">
+              <select name="type" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+                <% ['standard', 'animated', 'scheduled', 'gated', 'support', 'product'].forEach((type) => { %>
+                  <option value="<%= type %>" <%= link.type === type ? 'selected' : '' %>><%= type %></option>
+                <% }) %>
+              </select>
+              <input name="icon" value="<%= link.icon %>" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+              <select name="animation" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+                <% ['none', 'leap', 'pulse', 'float'].forEach((animation) => { %>
+                  <option value="<%= animation %>" <%= link.animation === animation ? 'selected' : '' %>><%= animation %></option>
+                <% }) %>
+              </select>
+              <input name="startsAt" type="datetime-local" value="<%= fmtDate(link.schedule && link.schedule.startsAt) %>" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+              <input name="endsAt" type="datetime-local" value="<%= fmtDate(link.schedule && link.schedule.endsAt) %>" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+              <input name="order" type="number" value="<%= link.order %>" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+            </div>
+            <div class="grid gap-3 sm:grid-cols-4">
+              <select name="gateType" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+                <% ['none', 'password', 'age', 'newsletter'].forEach((gate) => { %>
+                  <option value="<%= gate %>" <%= link.gate.type === gate ? 'selected' : '' %>><%= gate %></option>
+                <% }) %>
+              </select>
+              <input name="gatePassword" value="<%= link.gate.password %>" placeholder="Password" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+              <input name="price" type="number" step="0.01" value="<%= link.commerce.price %>" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+              <input name="currency" value="<%= link.commerce.currency %>" class="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+            </div>
+            <div class="flex flex-wrap items-center gap-4">
+              <label class="flex items-center gap-2 font-bold"><input name="pinned" type="checkbox" <%= link.pinned ? 'checked' : '' %>> Pinned</label>
+              <label class="flex items-center gap-2 font-bold"><input name="active" type="checkbox" <%= link.active ? 'checked' : '' %>> Active</label>
+              <button class="premium-button rounded-full bg-slate-950 px-5 py-3 text-sm font-black text-white dark:bg-white dark:text-black">Save</button>
+            </div>
+          </form>
+          <form action="/admin/links/<%= link._id %>/delete" method="post" class="mt-3">
+            <button class="text-sm font-black text-rose-600">Delete link</button>
+          </form>
+        </details>
+      <% }) %>
+    </div>
+  </section>
+
+  <section id="design" class="mt-8">
+    <form action="/admin/profile" method="post" enctype="multipart/form-data" class="glass-card rounded-[2.25rem] p-6">
+      <div class="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p class="mb-2 text-sm font-black uppercase tracking-[0.22em] text-fuchsia-600 dark:text-fuchsia-300">Customize your public page</p>
+          <h2 class="text-3xl font-black">Make the bio link feel like your brand</h2>
+          <p class="mt-2 max-w-2xl text-slate-600 dark:text-slate-300">Each setting below maps directly to something visitors see: your name, language, background, button shape, social icons, support box, and product shelf.</p>
+        </div>
+        <button class="premium-button rounded-full bg-slate-950 px-6 py-3 font-black text-white shadow-premium dark:bg-white dark:text-black">Save my profile</button>
+      </div>
+
+      <section class="mt-8 rounded-[2rem] bg-slate-950 p-5 text-white shadow-obsidian dark:bg-white dark:text-black">
+        <div class="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p class="text-sm font-black uppercase tracking-[0.22em] text-white/50 dark:text-black/50">Quick setup</p>
+            <h3 class="mt-1 text-2xl font-black">Start with a preset, then fine-tune only if you want.</h3>
+          </div>
+          <button type="button" data-modal-open="#iphone-preview-drawer" class="premium-button rounded-full bg-white px-5 py-3 text-sm font-black text-black dark:bg-black dark:text-white">Open phone preview</button>
+        </div>
+        <div class="mt-5 grid gap-3 md:grid-cols-5">
+          <% [
+            { name: 'Minimal', icon: 'circle', accent: '#111827', bgType: 'gradient', bg: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)', button: 'soft-shadow', font: 'sans', mode: 'light' },
+            { name: 'Bold Creator', icon: 'sparkles', accent: '#7c3aed', bgType: 'gradient', bg: 'linear-gradient(135deg, #fde68a 0%, #f0abfc 45%, #93c5fd 100%)', button: 'fill', font: 'sans', mode: 'system' },
+            { name: 'Storefront', icon: 'shopping-bag', accent: '#16a34a', bgType: 'gradient', bg: 'linear-gradient(135deg, #dcfce7 0%, #fef9c3 50%, #ffffff 100%)', button: 'rounded', font: 'sans', mode: 'light' },
+            { name: 'Editorial', icon: 'newspaper', accent: '#7f1d1d', bgType: 'solid', bg: '#fff7ed', button: 'outline', font: 'serif', mode: 'light' },
+            { name: 'Night Studio', icon: 'moon', accent: '#38bdf8', bgType: 'gradient', bg: 'linear-gradient(135deg, #000000 0%, #09090b 50%, #172554 100%)', button: 'soft-shadow', font: 'mono', mode: 'dark' }
+          ].forEach((preset) => { %>
+            <button type="button" data-builder-preset data-preset-accent="<%= preset.accent %>" data-preset-bg-type="<%= preset.bgType %>" data-preset-bg="<%= preset.bg %>" data-preset-button="<%= preset.button %>" data-preset-font="<%= preset.font %>" data-preset-mode="<%= preset.mode %>" class="premium-button rounded-3xl bg-white/10 p-4 text-left backdrop-blur-md hover:bg-white/15 dark:bg-black/10 dark:hover:bg-black/15">
+              <span class="mb-4 grid h-10 w-10 place-items-center rounded-2xl bg-white text-black dark:bg-black dark:text-white"><i data-lucide="<%= preset.icon %>" class="h-4 w-4"></i></span>
+              <span class="block text-sm font-black"><%= preset.name %></span>
+              <span class="mt-1 block text-xs font-semibold opacity-60">Applies color, background, buttons, font.</span>
+            </button>
+          <% }) %>
+        </div>
+      </section>
+
+      <div class="mt-8 grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
+        <section class="rounded-[2rem] bg-white/55 p-5 dark:bg-white/5">
+          <h3 class="text-xl font-black">1. Profile identity</h3>
+          <p class="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">This is the top card on your public bio page.</p>
+          <div class="mt-4 grid gap-3">
+            <label class="block">
+              <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Display name</span>
+              <input name="name" data-live-name-input value="<%= user.name %>" placeholder="Your public name" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+            </label>
+            <label class="block">
+              <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Workspace / brand name</span>
+              <input name="displayName" value="<%= user.tenant.displayName %>" placeholder="Brand or studio name" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+            </label>
+            <label class="block">
+              <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Avatar image URL</span>
+              <input name="avatarUrl" data-live-avatar-input value="<%= user.avatarUrl %>" placeholder="https://..." class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+            </label>
+            <label class="block">
+              <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Bio sentence</span>
+              <textarea name="bio" data-live-bio-input class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950"><%= user.bio %></textarea>
+            </label>
+            <label class="block">
+              <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Default language</span>
+              <select name="locale" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+                <% locales.forEach((item) => { %>
+                  <option value="<%= item.code %>" <%= user.locale === item.code ? 'selected' : '' %>><%= item.label %></option>
+                <% }) %>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section class="rounded-[2rem] bg-white/55 p-5 dark:bg-white/5">
+          <h3 class="text-xl font-black">2. Appearance</h3>
+          <p class="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">These controls change the overall mood and button style visitors see.</p>
+          <div class="mt-4 grid gap-4">
+            <div>
+              <span class="mb-3 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Page mode</span>
+              <div class="grid gap-3 sm:grid-cols-3">
+                <% [['system', 'Match device'], ['light', 'Always light'], ['dark', 'Always dark']].forEach((mode) => { %>
+                  <label class="cursor-pointer">
+                    <input class="peer sr-only" data-live-mode-input type="radio" name="colorMode" value="<%= mode[0] %>" <%= user.profileTheme.colorMode === mode[0] ? 'checked' : '' %>>
+                    <span class="block rounded-2xl border border-slate-200 bg-white/75 p-4 text-sm font-black transition-premium peer-checked:border-slate-950 peer-checked:bg-slate-950 peer-checked:text-white dark:border-white/10 dark:bg-black/20 dark:peer-checked:border-white dark:peer-checked:bg-white dark:peer-checked:text-black"><%= mode[1] %></span>
+                  </label>
+                <% }) %>
+              </div>
+            </div>
+            <div class="grid gap-3 sm:grid-cols-2">
+              <label class="block">
+                <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Font personality</span>
+                <select name="typography" data-live-font-input class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+                  <option value="sans" <%= user.profileTheme.typography === 'sans' ? 'selected' : '' %>>Modern sans - clean creator look</option>
+                  <option value="serif" <%= user.profileTheme.typography === 'serif' ? 'selected' : '' %>>Editorial serif - premium magazine feel</option>
+                  <option value="mono" <%= user.profileTheme.typography === 'mono' ? 'selected' : '' %>>Mono - tech, code, gaming</option>
+                </select>
+              </label>
+              <label class="block">
+                <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Accent color</span>
+                <input name="accentColor" data-live-accent-input type="color" value="<%= user.profileTheme.accentColor %>" class="h-[3.25rem] w-full rounded-2xl border border-slate-200 bg-white/80 px-2 dark:border-white/10 dark:bg-zinc-950">
+              </label>
+            </div>
+            <div>
+              <span class="mb-3 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Button style</span>
+              <div class="grid gap-3 sm:grid-cols-3">
+                <% [
+                  ['soft-shadow', 'Soft card', 'Premium rounded buttons with depth.'],
+                  ['fill', 'Bold fill', 'High contrast buttons using your accent.'],
+                  ['outline', 'Outline', 'Minimal buttons with thin borders.'],
+                  ['hard-shadow', 'Hard shadow', 'Playful creator-style offset shadow.'],
+                  ['rounded', 'Pill', 'Very rounded social-style buttons.'],
+                  ['square', 'Square', 'Sharper modern cards.']
+                ].forEach((style) => { %>
+                  <label class="cursor-pointer">
+                    <input class="peer sr-only" data-live-button-style-input type="radio" name="buttonStyle" value="<%= style[0] %>" <%= user.profileTheme.buttonStyle === style[0] ? 'checked' : '' %>>
+                    <span class="block h-full rounded-2xl border border-slate-200 bg-white/75 p-4 transition-premium peer-checked:border-slate-950 peer-checked:bg-slate-950 peer-checked:text-white dark:border-white/10 dark:bg-black/20 dark:peer-checked:border-white dark:peer-checked:bg-white dark:peer-checked:text-black">
+                      <span class="block text-sm font-black"><%= style[1] %></span>
+                      <span class="mt-1 block text-xs leading-5 opacity-65"><%= style[2] %></span>
+                    </span>
+                  </label>
+                <% }) %>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section class="mt-6 rounded-[2rem] bg-white/55 p-5 dark:bg-white/5">
+        <h3 class="text-xl font-black">3. Background</h3>
+        <p class="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">Use a gradient, solid color, image, or video behind your profile. Uploading a file overrides the text field.</p>
+        <div class="mt-4 grid gap-3 lg:grid-cols-[220px_1fr_260px]">
+          <label class="block">
+            <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Background type</span>
+            <select name="backgroundType" data-live-bg-type-input class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+              <option value="gradient" <%= user.profileTheme.backgroundType === 'gradient' ? 'selected' : '' %>>Gradient</option>
+              <option value="solid" <%= user.profileTheme.backgroundType === 'solid' ? 'selected' : '' %>>Solid color</option>
+              <option value="image" <%= user.profileTheme.backgroundType === 'image' ? 'selected' : '' %>>Image URL/upload</option>
+              <option value="video" <%= user.profileTheme.backgroundType === 'video' ? 'selected' : '' %>>Video URL/upload</option>
+            </select>
+          </label>
+          <label class="block">
+            <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Background value</span>
+            <input name="backgroundValue" data-live-bg-value-input value="<%= user.profileTheme.backgroundValue %>" placeholder="CSS gradient, #111827, or media URL" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+          </label>
+          <label class="block">
+            <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Upload image/video</span>
+            <input name="backgroundFile" type="file" accept="image/*,video/mp4,video/webm" class="w-full rounded-2xl border border-dashed border-slate-300 bg-white/70 px-4 py-3 text-sm dark:border-white/15 dark:bg-zinc-950">
+          </label>
+        </div>
+      </section>
+
+      <div class="mt-6 grid gap-6 lg:grid-cols-3">
+        <section class="rounded-[2rem] bg-white/55 p-5 dark:bg-white/5">
+          <h3 class="text-xl font-black">4. Social icons</h3>
+          <p class="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">Small icons shown near the top of your public profile.</p>
+          <div class="mt-4 space-y-3">
+            <% socials.slice(0, 4).forEach((social, index) => { %>
+              <details class="rounded-3xl bg-white/65 p-3 dark:bg-black/20" <%= index === 0 ? 'open' : '' %>>
+                <summary class="cursor-pointer list-none font-black"><%= social.label || `Social ${index + 1}` %></summary>
+                <div class="mt-3 grid gap-2">
+                  <input name="socialPlatform" value="<%= social.platform %>" placeholder="Platform, e.g. Instagram" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+                  <input name="socialLabel" value="<%= social.label %>" placeholder="Accessible label" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+                  <input name="socialIcon" value="<%= social.icon %>" placeholder="Icon name, e.g. instagram" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+                  <input name="socialUrl" value="<%= social.url %>" placeholder="https://..." class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+                </div>
+              </details>
+            <% }) %>
+          </div>
+        </section>
+        <section class="rounded-[2rem] bg-white/55 p-5 dark:bg-white/5">
+          <h3 class="text-xl font-black">5. Support box</h3>
+          <p class="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">Adds a simple tip jar card under your links.</p>
+          <div class="mt-4 space-y-3">
+            <label class="flex items-center gap-3 rounded-2xl bg-white/70 p-4 font-bold dark:bg-black/20"><input name="tipJarEnabled" data-live-tip-enabled-input type="checkbox" <%= user.tipJar.enabled ? 'checked' : '' %>> Show support box on my bio</label>
+            <input name="tipJarHeadline" data-live-tip-headline-input value="<%= user.tipJar.headline %>" placeholder="Support my work" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+            <input name="tipJarAmounts" value="<%= user.tipJar.suggestedAmounts.join(',') %>" placeholder="Suggested amounts: 5,10,25" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+            <input name="tipJarCurrency" value="<%= user.tipJar.currency %>" placeholder="Currency, e.g. USD" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+          </div>
+        </section>
+        <section class="rounded-[2rem] bg-white/55 p-5 dark:bg-white/5">
+          <h3 class="text-xl font-black">6. Product shelf</h3>
+          <p class="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">Optional cards for digital products displayed below the tip jar.</p>
+          <% products.slice(0, 2).forEach((product, index) => { %>
+            <details class="mt-4 rounded-3xl bg-white/65 p-3 dark:bg-black/20" <%= index === 0 ? 'open' : '' %>>
+              <summary class="cursor-pointer list-none font-black"><%= product.title || `Product ${index + 1}` %></summary>
+              <div class="mt-3 grid gap-2">
+                <input name="productTitle" value="<%= product.title %>" placeholder="Product title" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+                <textarea name="productDescription" placeholder="What visitors get" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950"><%= product.description %></textarea>
+                <input name="productPrice" type="number" step="0.01" value="<%= product.price %>" placeholder="Price" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+                <input name="productCurrency" value="<%= product.currency %>" placeholder="Currency" class="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+              </div>
+            </details>
+          <% }) %>
+        </section>
+      </div>
+    </form>
+  </section>
+</main>
+<%- include('partials/controls', { locales, locale, isRtl, t }) %>
+<%- include('partials/footer-scripts') %>
