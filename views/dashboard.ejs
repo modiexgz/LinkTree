@@ -21,6 +21,77 @@
 
   <%- include('partials/flash', { flash }) %>
 
+  <button type="button" data-modal-open="#iphone-preview-drawer" class="premium-button fixed bottom-24 left-5 z-40 inline-flex items-center gap-2 rounded-full bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-premium dark:bg-white dark:text-black lg:left-auto lg:right-5">
+    <i data-lucide="smartphone" class="h-4 w-4"></i>
+    Live iPhone preview
+  </button>
+
+  <aside id="iphone-preview-drawer" class="preview-drawer fixed inset-y-0 right-0 z-[60] w-full max-w-[430px] overflow-y-auto border-l border-white/20 bg-white/85 p-5 shadow-obsidian backdrop-blur-2xl dark:bg-zinc-950/90">
+    <div class="mb-4 flex items-center justify-between">
+      <div>
+        <p class="text-xs font-black uppercase tracking-[0.22em] text-blue-600 dark:text-blue-300">Live builder</p>
+        <h2 class="text-2xl font-black">iPhone preview</h2>
+      </div>
+      <button type="button" data-modal-close class="rounded-full bg-slate-100 p-3 text-slate-700 transition-premium hover:scale-105 dark:bg-white/10 dark:text-white">
+        <i data-lucide="x" class="h-5 w-5"></i>
+      </button>
+    </div>
+    <p class="mb-5 rounded-2xl bg-blue-50 p-4 text-sm font-semibold leading-6 text-blue-800 dark:bg-blue-500/10 dark:text-blue-200">
+      Change your name, bio, background, button style, or draft link. This phone updates instantly before you save.
+    </p>
+    <div class="mx-auto w-full max-w-[330px] rounded-[3rem] border-[10px] border-slate-950 bg-slate-950 p-2 shadow-obsidian dark:border-zinc-800">
+      <div class="relative min-h-[640px] overflow-hidden rounded-[2.25rem] bg-slate-100 text-slate-950" data-live-phone style="--accent:<%= user.profileTheme.accentColor %>;">
+        <div class="absolute left-1/2 top-2 z-20 h-6 w-24 -translate-x-1/2 rounded-full bg-black/80"></div>
+        <div data-live-bg class="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-fuchsia-100"></div>
+        <div class="absolute inset-0 bg-white/35 backdrop-blur-[1px] dark:bg-black/30"></div>
+        <div data-live-font class="relative z-10 px-5 pb-8 pt-12 font-sans">
+          <div class="mx-auto flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border border-white/70 bg-slate-950 text-2xl font-black text-white shadow-premium">
+            <% if (user.avatarUrl) { %>
+              <img data-live-avatar src="<%= user.avatarUrl %>" alt="" class="h-full w-full object-cover">
+            <% } else { %>
+              <span data-live-avatar-fallback><%= user.name.split(' ').map((part) => part[0]).slice(0, 2).join('').toUpperCase() %></span>
+              <img data-live-avatar src="" alt="" class="hidden h-full w-full object-cover">
+            <% } %>
+          </div>
+          <h3 data-live-name class="mt-4 text-center text-2xl font-black tracking-tight"><%= user.name %></h3>
+          <p data-live-bio class="mx-auto mt-2 max-w-[250px] text-center text-sm leading-6 text-slate-600"><%= user.bio %></p>
+          <div class="mt-4 flex justify-center gap-2">
+            <% socials.filter((social) => social.url).slice(0, 4).forEach((social) => { %>
+              <span class="grid h-9 w-9 place-items-center rounded-full bg-white/65 text-slate-700 shadow-sm backdrop-blur-md">
+                <i data-lucide="<%= social.icon || 'globe' %>" class="h-4 w-4"></i>
+              </span>
+            <% }) %>
+          </div>
+          <div data-live-links class="mt-6 space-y-3">
+            <% links.slice(0, 4).forEach((link) => { %>
+              <div class="premium-button live-preview-link bio-button-<%= user.profileTheme.buttonStyle %> flex items-center gap-3 rounded-[1.35rem] border border-white/40 p-3 text-sm font-black backdrop-blur-xl">
+                <span class="grid h-10 w-10 place-items-center rounded-2xl bg-white/45"><i data-lucide="<%= link.icon || 'link' %>" class="h-4 w-4"></i></span>
+                <span class="min-w-0 flex-1 truncate"><%= link.title %></span>
+                <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
+              </div>
+            <% }) %>
+            <div data-live-draft-link class="premium-button live-preview-link bio-button-<%= user.profileTheme.buttonStyle %> hidden items-center gap-3 rounded-[1.35rem] border border-white/40 p-3 text-sm font-black backdrop-blur-xl">
+              <span class="grid h-10 w-10 place-items-center rounded-2xl bg-white/45"><i data-live-draft-icon data-lucide="link" class="h-4 w-4"></i></span>
+              <span class="min-w-0 flex-1">
+                <span data-live-draft-title class="block truncate">New link</span>
+                <span data-live-draft-description class="block truncate text-[11px] font-semibold opacity-60"></span>
+              </span>
+              <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
+            </div>
+          </div>
+          <div data-live-support class="mt-4 rounded-[1.35rem] border border-white/50 bg-white/65 p-4 shadow-sm backdrop-blur-xl <%= user.tipJar.enabled ? '' : 'hidden' %>">
+            <p data-live-tip-headline class="font-black"><%= user.tipJar.headline %></p>
+            <div class="mt-3 grid grid-cols-3 gap-2 text-center text-xs font-black">
+              <% (user.tipJar.suggestedAmounts.length ? user.tipJar.suggestedAmounts : [5, 10, 25]).slice(0, 3).forEach((amount) => { %>
+                <span class="rounded-full bg-slate-950 px-2 py-2 text-white"><%= user.tipJar.currency %> <%= amount %></span>
+              <% }) %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
   <header class="grid gap-6 lg:grid-cols-[1fr_380px]">
     <section class="glass-card rounded-[2.25rem] p-8">
       <div class="flex flex-wrap items-start justify-between gap-5">
@@ -128,7 +199,7 @@
       <div class="mt-5 grid gap-4">
         <label class="block">
           <span class="mb-2 block text-sm font-black">Button title visitors see</span>
-          <input name="title" placeholder="Watch my newest video" required class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+          <input name="title" data-live-link-title placeholder="Watch my newest video" required class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
         </label>
         <label class="block">
           <span class="mb-2 block text-sm font-black">Where the button sends them</span>
@@ -136,7 +207,7 @@
         </label>
         <label class="block">
           <span class="mb-2 block text-sm font-black">Short note under the title</span>
-          <textarea name="description" placeholder="Optional: one sentence that explains this link." class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950"></textarea>
+          <textarea name="description" data-live-link-description placeholder="Optional: one sentence that explains this link." class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950"></textarea>
         </label>
 
         <div>
@@ -167,7 +238,7 @@
           <div class="mt-3 grid gap-3 sm:grid-cols-3">
             <label class="block">
               <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Icon</span>
-              <select name="icon" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
+              <select name="icon" data-live-link-icon class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 outline-none dark:border-white/10 dark:bg-zinc-950">
                 <% [['link', 'Link'], ['play-circle', 'Video'], ['mail', 'Newsletter'], ['shopping-bag', 'Product'], ['calendar-check', 'Booking'], ['heart', 'Support'], ['music', 'Music'], ['globe', 'Website']].forEach((item) => { %>
                   <option value="<%= item[0] %>"><%= item[1] %></option>
                 <% }) %>
@@ -297,6 +368,31 @@
         <button class="premium-button rounded-full bg-slate-950 px-6 py-3 font-black text-white shadow-premium dark:bg-white dark:text-black">Save my profile</button>
       </div>
 
+      <section class="mt-8 rounded-[2rem] bg-slate-950 p-5 text-white shadow-obsidian dark:bg-white dark:text-black">
+        <div class="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p class="text-sm font-black uppercase tracking-[0.22em] text-white/50 dark:text-black/50">Quick setup</p>
+            <h3 class="mt-1 text-2xl font-black">Start with a preset, then fine-tune only if you want.</h3>
+          </div>
+          <button type="button" data-modal-open="#iphone-preview-drawer" class="premium-button rounded-full bg-white px-5 py-3 text-sm font-black text-black dark:bg-black dark:text-white">Open phone preview</button>
+        </div>
+        <div class="mt-5 grid gap-3 md:grid-cols-5">
+          <% [
+            { name: 'Minimal', icon: 'circle', accent: '#111827', bgType: 'gradient', bg: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)', button: 'soft-shadow', font: 'sans', mode: 'light' },
+            { name: 'Bold Creator', icon: 'sparkles', accent: '#7c3aed', bgType: 'gradient', bg: 'linear-gradient(135deg, #fde68a 0%, #f0abfc 45%, #93c5fd 100%)', button: 'fill', font: 'sans', mode: 'system' },
+            { name: 'Storefront', icon: 'shopping-bag', accent: '#16a34a', bgType: 'gradient', bg: 'linear-gradient(135deg, #dcfce7 0%, #fef9c3 50%, #ffffff 100%)', button: 'rounded', font: 'sans', mode: 'light' },
+            { name: 'Editorial', icon: 'newspaper', accent: '#7f1d1d', bgType: 'solid', bg: '#fff7ed', button: 'outline', font: 'serif', mode: 'light' },
+            { name: 'Night Studio', icon: 'moon', accent: '#38bdf8', bgType: 'gradient', bg: 'linear-gradient(135deg, #000000 0%, #09090b 50%, #172554 100%)', button: 'soft-shadow', font: 'mono', mode: 'dark' }
+          ].forEach((preset) => { %>
+            <button type="button" data-builder-preset data-preset-accent="<%= preset.accent %>" data-preset-bg-type="<%= preset.bgType %>" data-preset-bg="<%= preset.bg %>" data-preset-button="<%= preset.button %>" data-preset-font="<%= preset.font %>" data-preset-mode="<%= preset.mode %>" class="premium-button rounded-3xl bg-white/10 p-4 text-left backdrop-blur-md hover:bg-white/15 dark:bg-black/10 dark:hover:bg-black/15">
+              <span class="mb-4 grid h-10 w-10 place-items-center rounded-2xl bg-white text-black dark:bg-black dark:text-white"><i data-lucide="<%= preset.icon %>" class="h-4 w-4"></i></span>
+              <span class="block text-sm font-black"><%= preset.name %></span>
+              <span class="mt-1 block text-xs font-semibold opacity-60">Applies color, background, buttons, font.</span>
+            </button>
+          <% }) %>
+        </div>
+      </section>
+
       <div class="mt-8 grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
         <section class="rounded-[2rem] bg-white/55 p-5 dark:bg-white/5">
           <h3 class="text-xl font-black">1. Profile identity</h3>
@@ -304,7 +400,7 @@
           <div class="mt-4 grid gap-3">
             <label class="block">
               <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Display name</span>
-              <input name="name" value="<%= user.name %>" placeholder="Your public name" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+              <input name="name" data-live-name-input value="<%= user.name %>" placeholder="Your public name" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
             </label>
             <label class="block">
               <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Workspace / brand name</span>
@@ -312,11 +408,11 @@
             </label>
             <label class="block">
               <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Avatar image URL</span>
-              <input name="avatarUrl" value="<%= user.avatarUrl %>" placeholder="https://..." class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+              <input name="avatarUrl" data-live-avatar-input value="<%= user.avatarUrl %>" placeholder="https://..." class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
             </label>
             <label class="block">
               <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Bio sentence</span>
-              <textarea name="bio" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950"><%= user.bio %></textarea>
+              <textarea name="bio" data-live-bio-input class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950"><%= user.bio %></textarea>
             </label>
             <label class="block">
               <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Default language</span>
@@ -338,7 +434,7 @@
               <div class="grid gap-3 sm:grid-cols-3">
                 <% [['system', 'Match device'], ['light', 'Always light'], ['dark', 'Always dark']].forEach((mode) => { %>
                   <label class="cursor-pointer">
-                    <input class="peer sr-only" type="radio" name="colorMode" value="<%= mode[0] %>" <%= user.profileTheme.colorMode === mode[0] ? 'checked' : '' %>>
+                    <input class="peer sr-only" data-live-mode-input type="radio" name="colorMode" value="<%= mode[0] %>" <%= user.profileTheme.colorMode === mode[0] ? 'checked' : '' %>>
                     <span class="block rounded-2xl border border-slate-200 bg-white/75 p-4 text-sm font-black transition-premium peer-checked:border-slate-950 peer-checked:bg-slate-950 peer-checked:text-white dark:border-white/10 dark:bg-black/20 dark:peer-checked:border-white dark:peer-checked:bg-white dark:peer-checked:text-black"><%= mode[1] %></span>
                   </label>
                 <% }) %>
@@ -347,7 +443,7 @@
             <div class="grid gap-3 sm:grid-cols-2">
               <label class="block">
                 <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Font personality</span>
-                <select name="typography" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+                <select name="typography" data-live-font-input class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
                   <option value="sans" <%= user.profileTheme.typography === 'sans' ? 'selected' : '' %>>Modern sans - clean creator look</option>
                   <option value="serif" <%= user.profileTheme.typography === 'serif' ? 'selected' : '' %>>Editorial serif - premium magazine feel</option>
                   <option value="mono" <%= user.profileTheme.typography === 'mono' ? 'selected' : '' %>>Mono - tech, code, gaming</option>
@@ -355,7 +451,7 @@
               </label>
               <label class="block">
                 <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Accent color</span>
-                <input name="accentColor" type="color" value="<%= user.profileTheme.accentColor %>" class="h-[3.25rem] w-full rounded-2xl border border-slate-200 bg-white/80 px-2 dark:border-white/10 dark:bg-zinc-950">
+                <input name="accentColor" data-live-accent-input type="color" value="<%= user.profileTheme.accentColor %>" class="h-[3.25rem] w-full rounded-2xl border border-slate-200 bg-white/80 px-2 dark:border-white/10 dark:bg-zinc-950">
               </label>
             </div>
             <div>
@@ -370,7 +466,7 @@
                   ['square', 'Square', 'Sharper modern cards.']
                 ].forEach((style) => { %>
                   <label class="cursor-pointer">
-                    <input class="peer sr-only" type="radio" name="buttonStyle" value="<%= style[0] %>" <%= user.profileTheme.buttonStyle === style[0] ? 'checked' : '' %>>
+                    <input class="peer sr-only" data-live-button-style-input type="radio" name="buttonStyle" value="<%= style[0] %>" <%= user.profileTheme.buttonStyle === style[0] ? 'checked' : '' %>>
                     <span class="block h-full rounded-2xl border border-slate-200 bg-white/75 p-4 transition-premium peer-checked:border-slate-950 peer-checked:bg-slate-950 peer-checked:text-white dark:border-white/10 dark:bg-black/20 dark:peer-checked:border-white dark:peer-checked:bg-white dark:peer-checked:text-black">
                       <span class="block text-sm font-black"><%= style[1] %></span>
                       <span class="mt-1 block text-xs leading-5 opacity-65"><%= style[2] %></span>
@@ -389,7 +485,7 @@
         <div class="mt-4 grid gap-3 lg:grid-cols-[220px_1fr_260px]">
           <label class="block">
             <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Background type</span>
-            <select name="backgroundType" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+            <select name="backgroundType" data-live-bg-type-input class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
               <option value="gradient" <%= user.profileTheme.backgroundType === 'gradient' ? 'selected' : '' %>>Gradient</option>
               <option value="solid" <%= user.profileTheme.backgroundType === 'solid' ? 'selected' : '' %>>Solid color</option>
               <option value="image" <%= user.profileTheme.backgroundType === 'image' ? 'selected' : '' %>>Image URL/upload</option>
@@ -398,7 +494,7 @@
           </label>
           <label class="block">
             <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Background value</span>
-            <input name="backgroundValue" value="<%= user.profileTheme.backgroundValue %>" placeholder="CSS gradient, #111827, or media URL" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
+            <input name="backgroundValue" data-live-bg-value-input value="<%= user.profileTheme.backgroundValue %>" placeholder="CSS gradient, #111827, or media URL" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-white/10 dark:bg-zinc-950">
           </label>
           <label class="block">
             <span class="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">Upload image/video</span>
@@ -429,8 +525,8 @@
           <h3 class="text-xl font-black">5. Support box</h3>
           <p class="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">Adds a simple tip jar card under your links.</p>
           <div class="mt-4 space-y-3">
-            <label class="flex items-center gap-3 rounded-2xl bg-white/70 p-4 font-bold dark:bg-black/20"><input name="tipJarEnabled" type="checkbox" <%= user.tipJar.enabled ? 'checked' : '' %>> Show support box on my bio</label>
-            <input name="tipJarHeadline" value="<%= user.tipJar.headline %>" placeholder="Support my work" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
+            <label class="flex items-center gap-3 rounded-2xl bg-white/70 p-4 font-bold dark:bg-black/20"><input name="tipJarEnabled" data-live-tip-enabled-input type="checkbox" <%= user.tipJar.enabled ? 'checked' : '' %>> Show support box on my bio</label>
+            <input name="tipJarHeadline" data-live-tip-headline-input value="<%= user.tipJar.headline %>" placeholder="Support my work" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
             <input name="tipJarAmounts" value="<%= user.tipJar.suggestedAmounts.join(',') %>" placeholder="Suggested amounts: 5,10,25" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
             <input name="tipJarCurrency" value="<%= user.tipJar.currency %>" placeholder="Currency, e.g. USD" class="w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 dark:border-white/10 dark:bg-zinc-950">
           </div>

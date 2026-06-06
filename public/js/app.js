@@ -93,7 +93,7 @@
 
     document.querySelectorAll('[data-modal-close]').forEach((button) => {
       button.addEventListener('click', () => {
-        const modal = button.closest('.modal');
+        const modal = button.closest('.modal, .preview-drawer');
         if (modal) {
           modal.classList.remove('is-open');
         }
@@ -194,6 +194,217 @@
     });
   }
 
+  function initLiveBioPreview() {
+    const phone = document.querySelector('[data-live-phone]');
+    if (!phone) {
+      return;
+    }
+
+    const preview = {
+      bg: document.querySelector('[data-live-bg]'),
+      font: document.querySelector('[data-live-font]'),
+      name: document.querySelector('[data-live-name]'),
+      bio: document.querySelector('[data-live-bio]'),
+      avatar: document.querySelector('[data-live-avatar]'),
+      avatarFallback: document.querySelector('[data-live-avatar-fallback]'),
+      draftLink: document.querySelector('[data-live-draft-link]'),
+      draftTitle: document.querySelector('[data-live-draft-title]'),
+      draftDescription: document.querySelector('[data-live-draft-description]'),
+      draftIcon: document.querySelector('[data-live-draft-icon]'),
+      support: document.querySelector('[data-live-support]'),
+      tipHeadline: document.querySelector('[data-live-tip-headline]')
+    };
+
+    const inputs = {
+      name: document.querySelector('[data-live-name-input]'),
+      bio: document.querySelector('[data-live-bio-input]'),
+      avatar: document.querySelector('[data-live-avatar-input]'),
+      font: document.querySelector('[data-live-font-input]'),
+      accent: document.querySelector('[data-live-accent-input]'),
+      bgType: document.querySelector('[data-live-bg-type-input]'),
+      bgValue: document.querySelector('[data-live-bg-value-input]'),
+      linkTitle: document.querySelector('[data-live-link-title]'),
+      linkDescription: document.querySelector('[data-live-link-description]'),
+      linkIcon: document.querySelector('[data-live-link-icon]'),
+      tipEnabled: document.querySelector('[data-live-tip-enabled-input]'),
+      tipHeadline: document.querySelector('[data-live-tip-headline-input]')
+    };
+
+    function initialsFor(name) {
+      return (name || 'You')
+        .split(/\s+/)
+        .filter(Boolean)
+        .map((part) => part[0])
+        .slice(0, 2)
+        .join('')
+        .toUpperCase();
+    }
+
+    function setText(element, value, fallback) {
+      if (element) {
+        element.textContent = value && value.trim() ? value.trim() : fallback;
+      }
+    }
+
+    function updateAvatar() {
+      if (!preview.avatar) {
+        return;
+      }
+      const url = inputs.avatar ? inputs.avatar.value.trim() : '';
+      if (url) {
+        preview.avatar.src = url;
+        preview.avatar.classList.remove('hidden');
+        preview.avatar.onerror = () => {
+          preview.avatar.classList.add('hidden');
+          if (preview.avatarFallback) {
+            preview.avatarFallback.classList.remove('hidden');
+          }
+        };
+        if (preview.avatarFallback) {
+          preview.avatarFallback.classList.add('hidden');
+        }
+      } else {
+        preview.avatar.removeAttribute('src');
+        preview.avatar.classList.add('hidden');
+        if (preview.avatarFallback) {
+          preview.avatarFallback.textContent = initialsFor(inputs.name && inputs.name.value);
+          preview.avatarFallback.classList.remove('hidden');
+        }
+      }
+    }
+
+    function updateBackground() {
+      if (!preview.bg) {
+        return;
+      }
+      const type = inputs.bgType ? inputs.bgType.value : 'gradient';
+      const value = inputs.bgValue && inputs.bgValue.value.trim()
+        ? inputs.bgValue.value.trim()
+        : 'linear-gradient(135deg, #eff6ff 0%, #ffffff 45%, #fae8ff 100%)';
+
+      preview.bg.style.background = '';
+      preview.bg.style.backgroundImage = '';
+      preview.bg.style.backgroundColor = '';
+      preview.bg.style.backgroundSize = 'cover';
+      preview.bg.style.backgroundPosition = 'center';
+
+      if (type === 'image') {
+        preview.bg.style.backgroundImage = `url("${value}")`;
+      } else if (type === 'solid') {
+        preview.bg.style.backgroundColor = value;
+      } else if (type === 'video') {
+        preview.bg.style.background = 'linear-gradient(135deg, #020617 0%, #1d4ed8 45%, #a21caf 100%)';
+      } else {
+        preview.bg.style.background = value;
+      }
+    }
+
+    function updateFont() {
+      if (!preview.font) {
+        return;
+      }
+      preview.font.classList.remove('font-sans', 'font-serif', 'font-mono');
+      preview.font.classList.add(inputs.font && inputs.font.value === 'serif' ? 'font-serif' : inputs.font && inputs.font.value === 'mono' ? 'font-mono' : 'font-sans');
+    }
+
+    function updateButtonStyle() {
+      const selected = document.querySelector('[data-live-button-style-input]:checked');
+      const style = selected ? selected.value : 'soft-shadow';
+      document.querySelectorAll('.live-preview-link').forEach((link) => {
+        ['fill', 'outline', 'hard-shadow', 'soft-shadow', 'rounded', 'square'].forEach((name) => {
+          link.classList.remove(`bio-button-${name}`);
+        });
+        link.classList.add(`bio-button-${style}`);
+      });
+    }
+
+    function updateMode() {
+      const selected = document.querySelector('[data-live-mode-input]:checked');
+      const mode = selected ? selected.value : 'system';
+      const shouldDark = mode === 'dark' || (mode === 'system' && document.documentElement.classList.contains('dark'));
+      phone.classList.toggle('dark', shouldDark);
+      phone.classList.toggle('text-white', shouldDark);
+      phone.classList.toggle('text-slate-950', !shouldDark);
+    }
+
+    function updateDraftLink() {
+      if (!preview.draftLink) {
+        return;
+      }
+      const title = inputs.linkTitle ? inputs.linkTitle.value.trim() : '';
+      const description = inputs.linkDescription ? inputs.linkDescription.value.trim() : '';
+      const icon = inputs.linkIcon ? inputs.linkIcon.value : 'link';
+      preview.draftLink.classList.toggle('hidden', !title);
+      preview.draftLink.classList.toggle('flex', Boolean(title));
+      setText(preview.draftTitle, title, 'New link');
+      setText(preview.draftDescription, description, '');
+      if (preview.draftIcon) {
+        preview.draftIcon.setAttribute('data-lucide', icon || 'link');
+        preview.draftIcon.innerHTML = '';
+      }
+      initIcons();
+    }
+
+    function updateSupport() {
+      if (preview.support && inputs.tipEnabled) {
+        preview.support.classList.toggle('hidden', !inputs.tipEnabled.checked);
+      }
+      setText(preview.tipHeadline, inputs.tipHeadline && inputs.tipHeadline.value, 'Support my work');
+    }
+
+    function updateAll() {
+      setText(preview.name, inputs.name && inputs.name.value, 'Your name');
+      setText(preview.bio, inputs.bio && inputs.bio.value, 'Tell visitors what you create, sell, or share.');
+      if (preview.avatarFallback) {
+        preview.avatarFallback.textContent = initialsFor(inputs.name && inputs.name.value);
+      }
+      if (inputs.accent) {
+        phone.style.setProperty('--accent', inputs.accent.value || '#111827');
+      }
+      updateAvatar();
+      updateBackground();
+      updateFont();
+      updateButtonStyle();
+      updateMode();
+      updateDraftLink();
+      updateSupport();
+    }
+
+    document.querySelectorAll('[data-live-name-input], [data-live-bio-input], [data-live-avatar-input], [data-live-font-input], [data-live-accent-input], [data-live-bg-type-input], [data-live-bg-value-input], [data-live-link-title], [data-live-link-description], [data-live-link-icon], [data-live-tip-enabled-input], [data-live-tip-headline-input], [data-live-button-style-input], [data-live-mode-input]').forEach((input) => {
+      input.addEventListener('input', updateAll);
+      input.addEventListener('change', updateAll);
+    });
+
+    document.querySelectorAll('[data-builder-preset]').forEach((button) => {
+      button.addEventListener('click', () => {
+        if (inputs.accent) {
+          inputs.accent.value = button.dataset.presetAccent || inputs.accent.value;
+        }
+        if (inputs.bgType) {
+          inputs.bgType.value = button.dataset.presetBgType || inputs.bgType.value;
+        }
+        if (inputs.bgValue) {
+          inputs.bgValue.value = button.dataset.presetBg || inputs.bgValue.value;
+        }
+        if (inputs.font) {
+          inputs.font.value = button.dataset.presetFont || inputs.font.value;
+        }
+        const mode = document.querySelector(`[data-live-mode-input][value="${button.dataset.presetMode}"]`);
+        if (mode) {
+          mode.checked = true;
+        }
+        const buttonStyle = document.querySelector(`[data-live-button-style-input][value="${button.dataset.presetButton}"]`);
+        if (buttonStyle) {
+          buttonStyle.checked = true;
+        }
+        document.querySelector('#iphone-preview-drawer')?.classList.add('is-open');
+        updateAll();
+      });
+    });
+
+    updateAll();
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     initLanguage();
@@ -203,5 +414,6 @@
     drawMiniChart();
     initCheckoutAutoload();
     initInteractiveCards();
+    initLiveBioPreview();
   });
 })();

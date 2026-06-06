@@ -159,6 +159,33 @@ body {
   transform: translateY(0) scale(1);
 }
 
+.preview-drawer {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(100%);
+  transition: all 0.5s var(--ease-premium);
+}
+
+.preview-drawer.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+
+[dir="rtl"] .preview-drawer {
+  left: 0;
+  right: auto;
+  transform: translateX(-100%);
+}
+
+[dir="rtl"] .preview-drawer.is-open {
+  transform: translateX(0);
+}
+
+[data-live-phone] .bio-button-hard-shadow {
+  box-shadow: 5px 5px 0 var(--accent, #111827);
+}
+
 @keyframes shimmer {
   100% {
     transform: translateX(100%);
