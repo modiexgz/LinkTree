@@ -287,7 +287,7 @@ async function resolveMongoUri() {
 
     console.warn(`MongoDB unavailable at ${MONGODB_URI}. Starting embedded development MongoDB instead.`);
     await mongoose.disconnect().catch(() => {});
-    const { MongoMemoryServer } = require('mongodb-memory-server');
+    const { MongoMemoryServer } = require('mongodb-memory-server-core');
     memoryMongoServer = await MongoMemoryServer.create();
     const memoryUri = memoryMongoServer.getUri('premium_linktree');
     await connectMongoDatabase(memoryUri);

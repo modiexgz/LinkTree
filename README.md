@@ -15,6 +15,37 @@ Open:
 http://localhost:3000
 ```
 
+## Windows install cleanup
+
+If `npm install` fails with `EBUSY`, `EPERM`, or a missing package inside `node_modules`, Windows has usually locked files from a previous install or from a running server. This is common inside OneDrive/Desktop folders.
+
+1. Stop the app first:
+
+```powershell
+Ctrl+C
+```
+
+2. Close VS Code terminals that are running `npm start`, `npm run dev`, or `node server.js`.
+
+3. In PowerShell, from the project folder, run:
+
+```powershell
+taskkill /F /IM node.exe
+Remove-Item -Recurse -Force node_modules
+Remove-Item -Force package-lock.json
+npm cache verify
+npm install
+npm start
+```
+
+If Windows still says files are locked, restart your computer and run the commands again before opening the project in an editor.
+
+Recommended: move the project outside OneDrive, for example:
+
+```text
+C:\Projects\LinkTree
+```
+
 ## MongoDB behavior
 
 By default the app tries to connect to:
